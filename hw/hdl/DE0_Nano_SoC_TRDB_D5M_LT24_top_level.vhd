@@ -192,7 +192,11 @@ architecture rtl of DE0_Nano_SoC_TRDB_D5M_LT24_top_level is
             hps_0_io_hps_io_gpio_inst_GPIO53    : inout std_logic                     := 'X';
             hps_0_io_hps_io_gpio_inst_GPIO54    : inout std_logic                     := 'X';
             hps_0_io_hps_io_gpio_inst_GPIO61    : inout std_logic                     := 'X';
-            pio_leds_external_connection_export : out   std_logic_vector(7 downto 0)
+			pio_leds_external_connection_export : out   std_logic_vector(7 downto 0);                     -- export
+			i2c_0_i2c_scl                       : inout std_logic                     := 'X';             -- scl
+			i2c_0_i2c_sda                       : inout std_logic                     := 'X';             -- sda
+			cameracontroller_0_pixclk_clk            : in    std_logic                     := 'X';             -- clk
+			cameracontroller_0_camerareset_n_reset_n : out   std_logic                                         -- reset_n
         );
     end component soc_system;
 
@@ -201,7 +205,6 @@ begin
     u0 : component soc_system
     port map(
         clk_clk                             => FPGA_CLK1_50,
-        reset_reset_n                       => '1',
         hps_0_ddr_mem_a                     => HPS_DDR3_ADDR,
         hps_0_ddr_mem_ba                    => HPS_DDR3_BA,
         hps_0_ddr_mem_ck                    => HPS_DDR3_CK_P,
@@ -266,7 +269,13 @@ begin
         hps_0_io_hps_io_gpio_inst_GPIO53    => HPS_LED,
         hps_0_io_hps_io_gpio_inst_GPIO54    => HPS_KEY_N,
         hps_0_io_hps_io_gpio_inst_GPIO61    => HPS_GSENSOR_INT,
-        pio_leds_external_connection_export => LED
+        pio_leds_external_connection_export => LED,
+		i2c_0_i2c_scl                       => GPIO_1_D5M_SCLK,                       --                    i2c_0_i2c.scl
+		i2c_0_i2c_sda                       => GPIO_1_D5M_SDATA,                       --                             .sda
+		reset_reset_n                       => KEY_N(0),                       						 --                        reset.reset_n
+		cameracontroller_0_pixclk_clk       => GPIO_1_D5M_PIXCLK,       										 --    cameracontroller_0_pixclk.clk
+		cameracontroller_0_camerareset_n_reset_n =>GPIO_1_D5M_RESET_N
     );
+	
 
 end;

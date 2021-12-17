@@ -1,5 +1,6 @@
 
 module soc_system (
+	cameracontroller_0_pixclk_clk,
 	clk_clk,
 	hps_0_ddr_mem_a,
 	hps_0_ddr_mem_ba,
@@ -65,9 +66,13 @@ module soc_system (
 	hps_0_io_hps_io_gpio_inst_GPIO53,
 	hps_0_io_hps_io_gpio_inst_GPIO54,
 	hps_0_io_hps_io_gpio_inst_GPIO61,
+	i2c_0_i2c_scl,
+	i2c_0_i2c_sda,
 	pio_leds_external_connection_export,
-	reset_reset_n);	
+	reset_reset_n,
+	cameracontroller_0_camerareset_n_reset_n);	
 
+	input		cameracontroller_0_pixclk_clk;
 	input		clk_clk;
 	output	[14:0]	hps_0_ddr_mem_a;
 	output	[2:0]	hps_0_ddr_mem_ba;
@@ -133,6 +138,9 @@ module soc_system (
 	inout		hps_0_io_hps_io_gpio_inst_GPIO53;
 	inout		hps_0_io_hps_io_gpio_inst_GPIO54;
 	inout		hps_0_io_hps_io_gpio_inst_GPIO61;
+	inout		i2c_0_i2c_scl;
+	inout		i2c_0_i2c_sda;
 	output	[7:0]	pio_leds_external_connection_export;
 	input		reset_reset_n;
+	output		cameracontroller_0_camerareset_n_reset_n;
 endmodule
