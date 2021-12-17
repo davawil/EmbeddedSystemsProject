@@ -4,7 +4,7 @@
 -- MODULE: scfifo 
 
 -- ============================================================
--- File Name: fifo.vhd
+-- File Name: fifo_color.vhd
 -- Megafunction Name(s):
 -- 			scfifo
 --
@@ -39,27 +39,27 @@ USE ieee.std_logic_1164.all;
 LIBRARY altera_mf;
 USE altera_mf.all;
 
-ENTITY fifo IS
+ENTITY fifo_color IS
 	PORT
 	(
 		clock		: IN STD_LOGIC ;
-		data		: IN STD_LOGIC_VECTOR (15 DOWNTO 0);
+		data		: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
 		rdreq		: IN STD_LOGIC ;
 		wrreq		: IN STD_LOGIC ;
 		empty		: OUT STD_LOGIC ;
 		full		: OUT STD_LOGIC ;
-		q		: OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
-		usedw		: OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
+		q		: OUT STD_LOGIC_VECTOR (11 DOWNTO 0);
+		usedw		: OUT STD_LOGIC_VECTOR (8 DOWNTO 0)
 	);
-END fifo;
+END fifo_color;
 
 
-ARCHITECTURE SYN OF fifo IS
+ARCHITECTURE SYN OF fifo_color IS
 
 	SIGNAL sub_wire0	: STD_LOGIC ;
 	SIGNAL sub_wire1	: STD_LOGIC ;
-	SIGNAL sub_wire2	: STD_LOGIC_VECTOR (15 DOWNTO 0);
-	SIGNAL sub_wire3	: STD_LOGIC_VECTOR (7 DOWNTO 0);
+	SIGNAL sub_wire2	: STD_LOGIC_VECTOR (11 DOWNTO 0);
+	SIGNAL sub_wire3	: STD_LOGIC_VECTOR (8 DOWNTO 0);
 
 
 
@@ -78,31 +78,31 @@ ARCHITECTURE SYN OF fifo IS
 	);
 	PORT (
 			clock	: IN STD_LOGIC ;
-			data	: IN STD_LOGIC_VECTOR (15 DOWNTO 0);
+			data	: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
 			rdreq	: IN STD_LOGIC ;
 			wrreq	: IN STD_LOGIC ;
 			empty	: OUT STD_LOGIC ;
 			full	: OUT STD_LOGIC ;
-			q	: OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
-			usedw	: OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
+			q	: OUT STD_LOGIC_VECTOR (11 DOWNTO 0);
+			usedw	: OUT STD_LOGIC_VECTOR (8 DOWNTO 0)
 	);
 	END COMPONENT;
 
 BEGIN
 	empty    <= sub_wire0;
 	full    <= sub_wire1;
-	q    <= sub_wire2(15 DOWNTO 0);
-	usedw    <= sub_wire3(7 DOWNTO 0);
+	q    <= sub_wire2(11 DOWNTO 0);
+	usedw    <= sub_wire3(8 DOWNTO 0);
 
 	scfifo_component : scfifo
 	GENERIC MAP (
 		add_ram_output_register => "OFF",
 		intended_device_family => "Cyclone V",
-		lpm_numwords => 256,
+		lpm_numwords => 512,
 		lpm_showahead => "ON",
 		lpm_type => "scfifo",
-		lpm_width => 16,
-		lpm_widthu => 8,
+		lpm_width => 12,
+		lpm_widthu => 9,
 		overflow_checking => "ON",
 		underflow_checking => "ON",
 		use_eab => "ON"
@@ -131,7 +131,7 @@ END SYN;
 -- Retrieval info: PRIVATE: AlmostFullThr NUMERIC "-1"
 -- Retrieval info: PRIVATE: CLOCKS_ARE_SYNCHRONIZED NUMERIC "0"
 -- Retrieval info: PRIVATE: Clock NUMERIC "0"
--- Retrieval info: PRIVATE: Depth NUMERIC "256"
+-- Retrieval info: PRIVATE: Depth NUMERIC "512"
 -- Retrieval info: PRIVATE: Empty NUMERIC "1"
 -- Retrieval info: PRIVATE: Full NUMERIC "1"
 -- Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Cyclone V"
@@ -144,11 +144,11 @@ END SYN;
 -- Retrieval info: PRIVATE: SYNTH_WRAPPER_GEN_POSTFIX STRING "0"
 -- Retrieval info: PRIVATE: UNDERFLOW_CHECKING NUMERIC "0"
 -- Retrieval info: PRIVATE: UsedW NUMERIC "1"
--- Retrieval info: PRIVATE: Width NUMERIC "16"
+-- Retrieval info: PRIVATE: Width NUMERIC "12"
 -- Retrieval info: PRIVATE: dc_aclr NUMERIC "0"
 -- Retrieval info: PRIVATE: diff_widths NUMERIC "0"
 -- Retrieval info: PRIVATE: msb_usedw NUMERIC "0"
--- Retrieval info: PRIVATE: output_width NUMERIC "16"
+-- Retrieval info: PRIVATE: output_width NUMERIC "12"
 -- Retrieval info: PRIVATE: rsEmpty NUMERIC "1"
 -- Retrieval info: PRIVATE: rsFull NUMERIC "0"
 -- Retrieval info: PRIVATE: rsUsedW NUMERIC "0"
@@ -160,33 +160,33 @@ END SYN;
 -- Retrieval info: LIBRARY: altera_mf altera_mf.altera_mf_components.all
 -- Retrieval info: CONSTANT: ADD_RAM_OUTPUT_REGISTER STRING "OFF"
 -- Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Cyclone V"
--- Retrieval info: CONSTANT: LPM_NUMWORDS NUMERIC "256"
+-- Retrieval info: CONSTANT: LPM_NUMWORDS NUMERIC "512"
 -- Retrieval info: CONSTANT: LPM_SHOWAHEAD STRING "ON"
 -- Retrieval info: CONSTANT: LPM_TYPE STRING "scfifo"
--- Retrieval info: CONSTANT: LPM_WIDTH NUMERIC "16"
--- Retrieval info: CONSTANT: LPM_WIDTHU NUMERIC "8"
+-- Retrieval info: CONSTANT: LPM_WIDTH NUMERIC "12"
+-- Retrieval info: CONSTANT: LPM_WIDTHU NUMERIC "9"
 -- Retrieval info: CONSTANT: OVERFLOW_CHECKING STRING "ON"
 -- Retrieval info: CONSTANT: UNDERFLOW_CHECKING STRING "ON"
 -- Retrieval info: CONSTANT: USE_EAB STRING "ON"
 -- Retrieval info: USED_PORT: clock 0 0 0 0 INPUT NODEFVAL "clock"
--- Retrieval info: USED_PORT: data 0 0 16 0 INPUT NODEFVAL "data[15..0]"
+-- Retrieval info: USED_PORT: data 0 0 12 0 INPUT NODEFVAL "data[11..0]"
 -- Retrieval info: USED_PORT: empty 0 0 0 0 OUTPUT NODEFVAL "empty"
 -- Retrieval info: USED_PORT: full 0 0 0 0 OUTPUT NODEFVAL "full"
--- Retrieval info: USED_PORT: q 0 0 16 0 OUTPUT NODEFVAL "q[15..0]"
+-- Retrieval info: USED_PORT: q 0 0 12 0 OUTPUT NODEFVAL "q[11..0]"
 -- Retrieval info: USED_PORT: rdreq 0 0 0 0 INPUT NODEFVAL "rdreq"
--- Retrieval info: USED_PORT: usedw 0 0 8 0 OUTPUT NODEFVAL "usedw[7..0]"
+-- Retrieval info: USED_PORT: usedw 0 0 9 0 OUTPUT NODEFVAL "usedw[8..0]"
 -- Retrieval info: USED_PORT: wrreq 0 0 0 0 INPUT NODEFVAL "wrreq"
 -- Retrieval info: CONNECT: @clock 0 0 0 0 clock 0 0 0 0
--- Retrieval info: CONNECT: @data 0 0 16 0 data 0 0 16 0
+-- Retrieval info: CONNECT: @data 0 0 12 0 data 0 0 12 0
 -- Retrieval info: CONNECT: @rdreq 0 0 0 0 rdreq 0 0 0 0
 -- Retrieval info: CONNECT: @wrreq 0 0 0 0 wrreq 0 0 0 0
 -- Retrieval info: CONNECT: empty 0 0 0 0 @empty 0 0 0 0
 -- Retrieval info: CONNECT: full 0 0 0 0 @full 0 0 0 0
--- Retrieval info: CONNECT: q 0 0 16 0 @q 0 0 16 0
--- Retrieval info: CONNECT: usedw 0 0 8 0 @usedw 0 0 8 0
--- Retrieval info: GEN_FILE: TYPE_NORMAL fifo.vhd TRUE
--- Retrieval info: GEN_FILE: TYPE_NORMAL fifo.inc FALSE
--- Retrieval info: GEN_FILE: TYPE_NORMAL fifo.cmp TRUE
--- Retrieval info: GEN_FILE: TYPE_NORMAL fifo.bsf FALSE
--- Retrieval info: GEN_FILE: TYPE_NORMAL fifo_inst.vhd TRUE
+-- Retrieval info: CONNECT: q 0 0 12 0 @q 0 0 12 0
+-- Retrieval info: CONNECT: usedw 0 0 9 0 @usedw 0 0 9 0
+-- Retrieval info: GEN_FILE: TYPE_NORMAL fifo_color.vhd TRUE
+-- Retrieval info: GEN_FILE: TYPE_NORMAL fifo_color.inc FALSE
+-- Retrieval info: GEN_FILE: TYPE_NORMAL fifo_color.cmp TRUE
+-- Retrieval info: GEN_FILE: TYPE_NORMAL fifo_color.bsf FALSE
+-- Retrieval info: GEN_FILE: TYPE_NORMAL fifo_color_inst.vhd TRUE
 -- Retrieval info: LIB_FILE: altera_mf

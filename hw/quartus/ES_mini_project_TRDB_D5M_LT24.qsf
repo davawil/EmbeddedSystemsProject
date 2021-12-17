@@ -960,3 +960,4 @@ set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
 set_global_assignment -name ECO_REGENERATE_REPORT ON
 
 set_global_assignment -name QIP_FILE fifo.qip
+set_global_assignment -name QIP_FILE fifo_color.qip
