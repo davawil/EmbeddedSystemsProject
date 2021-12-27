@@ -4,6 +4,9 @@ use ieee.numeric_std.all;
 
 entity Camera_interface_sub is
 	port(
+      -- col_sim     : out std_logic_vector(10 downto 0);
+      -- row_sim     : out std_logic_vector(10 downto 0);
+      -- h_b_sim     : out unsigned(4 downto 0);
 			clk         	: in std_logic;
 			nReset      	: in std_logic;
 			pixclk			: in std_logic;
@@ -13,13 +16,13 @@ entity Camera_interface_sub is
 			start_CI			: in std_logic;
 			WrFIFO			: out std_logic;
 			WrData			: out std_logic_vector(15 downto 0)
+
 		);
 	end Camera_interface_sub;
 
 architecture comp of Camera_interface_sub is
 	type state_count_type is (s0, s1, s2, s3, s4, s5);
   signal state_count : state_count_type;
-  signal start_interface : std_logic := '0';
   signal col : unsigned(10 downto 0) := (others => '0');
   signal row : unsigned(10 downto 0) := (others => '0');
   signal highest_bit : unsigned(4 downto 0) := (others => '0');
@@ -31,11 +34,12 @@ begin
   begin
     if nReset = '0' then
       state_count <= s0
-
+      row = 0;
+      col = 0;
     elsif rising_edge(pixclk) then
       case state_count is
         when s0 =>
-          if start_interface = '1' then
+          if start_CI = '1' then
             state_count <= s1
           end if;
 
