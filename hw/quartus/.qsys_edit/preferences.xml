@@ -10,7 +10,7 @@
    <tags preferredWidth="170" />
   </columns>
  </systemtable>
- <library expandedCategories="Project,Library" />
+ <library expandedCategories="Project" />
  <window width="1920" height="1020" x="0" y="0" />
  <hdlexample language="VHDL" />
  <generation synthesis="VHDL" />
