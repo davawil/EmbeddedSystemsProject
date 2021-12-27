@@ -12,6 +12,7 @@ entity DMA_sub is
 			Wr				: out std_logic;
 			DataWr			: out std_logic_vector(31 downto 0);
 			RdFifo			: out std_logic;
+			Fifo_empty		: in std_logic;
 			RdData			: in std_logic_vector(15 downto 0);
 			FBuff0			: in std_logic_vector(31 downto 0);
 			FBuff1			: in std_logic_vector(31 downto 0);
