@@ -48,6 +48,7 @@
 *.smsg
 *.sof
 *.sopc_builder
+*.sopcinfo
 *.summary
 *.tcl
 *.txt # Explicitly add any text files used
