@@ -50,8 +50,6 @@
 *.sopc_builder
 *.sopcinfo
 *.summary
-*.tcl
-*.txt # Explicitly add any text files used
 *~
 *example*
 *sopc_*
