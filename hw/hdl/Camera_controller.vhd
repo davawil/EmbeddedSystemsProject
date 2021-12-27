@@ -55,6 +55,7 @@ architecture comp of Camera_controller is
 			Wr				: out std_logic;
 			DataWr			: out std_logic_vector(31 downto 0);
 			RdFifo			: out std_logic;
+			Fifo_empty		: in std_logic;
 			RdData			: in std_logic_vector(15 downto 0);
 			FBuff0			: in std_logic_vector(31 downto 0);
 			FBuff1			: in std_logic_vector(31 downto 0);
@@ -123,6 +124,7 @@ begin
 			Wr					=> AM_Write,
 			DataWr				=> AM_DataWr,
 			RdFifo				=> RdFifo,
+			Fifo_empty			=> fifo_empty,
 			RdData				=> RdData,
 			FBuff0				=> FBuff0,
 			FBuff1				=> FBuff1,
