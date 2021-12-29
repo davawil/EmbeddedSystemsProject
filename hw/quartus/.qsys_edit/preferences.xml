@@ -10,7 +10,8 @@
    <tags preferredWidth="170" />
   </columns>
  </systemtable>
- <library expandedCategories="Project" />
+ <library
+   expandedCategories="Library/University Program/Audio &amp; Video,Library/Basic Functions,Project,Library/Qsys Interconnect/Memory-Mapped Alpha,Library/Qsys Interconnect/Memory-Mapped,Library/Qsys Interconnect,Library,Library/University Program/Audio &amp; Video/Video,Library/Basic Functions/On Chip Memory,Library/University Program" />
  <window width="1920" height="1020" x="0" y="0" />
  <hdlexample language="VHDL" />
  <generation synthesis="VHDL" />
