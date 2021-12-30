@@ -119,7 +119,6 @@ begin
 			clk      			=> clk,   	
 			nReset      		=> nReset,
 			WaitRequest 		=> AM_WaitRequest,
-			Fifo_empty			=> fifo_empty,
 			irq					=> AM_irq,
 			Address 			=> AM_Address,
 			Wr					=> AM_Write,
