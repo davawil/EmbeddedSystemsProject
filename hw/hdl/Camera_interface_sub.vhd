@@ -107,6 +107,8 @@ begin
       state_count <= s_init;
       row <= x"000";
       col <= x"000";
+      shift_G <= 0;
+      shift_RB <= 0;
     elsif rising_edge(pixclk) then
       case state_count is
         when s_init =>
@@ -165,6 +167,8 @@ begin
   begin
     if nReset = '0' then
       state_color <= s_init;
+      start <= '0';
+      pixclk_sig <= "00";
     elsif rising_edge(clk) then
       if start_CI = '1' then
         start <= '1';
@@ -176,6 +180,7 @@ begin
           if start = '1' and row = x"000" and col = x"000" and LVAL = '1' and FVAL='1' then
             state_color <= s_start;
             pix_max <= x"000";
+            start <= '0';
           end if;
 
         when s_start =>
@@ -233,7 +238,6 @@ begin
           WrFifo_r <= '0';
           if row = 479 and col = 639 and (LVAL = '0' or FVAL = '0')then
             state_color <= s_init;
-            start <= '0';
           elsif pixclk_sig = "01" and LVAL = '1' and FVAL = '1' then
             state_color <= s_start;
           end if;

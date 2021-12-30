@@ -90,6 +90,8 @@ begin
 
         LVAL <= '1';
         start_CI <= '1';
+        wait for CLK_PERIOD;
+        start_CI <= '0';
 
         for col in 0 to 639 loop
           data <= std_logic_vector(to_unsigned(col, 12));
@@ -108,6 +110,37 @@ begin
 
     end loop;
 
+    FVAL <= '1';
+
+    wait for PIXCLK_PERIOD;
+
+    LVAL <= '1';
+    start_CI <= '1';
+    wait for CLK_PERIOD;
+    start_CI <= '0';
+
+    for col in 0 to 15 loop
+      data <= std_logic_vector(to_unsigned(col, 12));
+      wait for PIXCLK_PERIOD;
+    end loop;
+    nReset <= '0';
+    wait for PIXCLK_PERIOD;
+    nReset <= '1';
+    wait for PIXCLK_PERIOD;
+
+    FVAL <= '1';
+
+    wait for PIXCLK_PERIOD;
+
+    LVAL <= '1';
+    start_CI <= '1';
+    wait for CLK_PERIOD;
+    start_CI <= '0';
+
+    for col in 0 to 15 loop
+      data <= std_logic_vector(to_unsigned(col, 12));
+      wait for PIXCLK_PERIOD;
+    end loop;
 
     -- test done after 155ms
     test_finished <= true;
