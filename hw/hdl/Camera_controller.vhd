@@ -50,7 +50,6 @@ architecture comp of Camera_controller is
 			clk         	: in std_logic;
 			nReset      	: in std_logic;
 			WaitRequest 	: in std_logic;
-			Fifo_empty		: in std_logic;
 			irq				: out std_logic;
 			Address 		: out std_logic_vector(31 downto 0);
 			Wr				: out std_logic;
