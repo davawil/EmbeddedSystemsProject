@@ -19,7 +19,7 @@ entity DMA_sub is
 			start_DMA		: in std_logic
 		);
 	end DMA_sub;
-	
+
 architecture comp of DMA_sub is
 	type State is(S_Init, S_Idle, S_Acq, S_Wait, S_Write, S_Inc, S_BuffInc, S_Hold);
 
