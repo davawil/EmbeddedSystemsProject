@@ -42,7 +42,6 @@ begin
     FVAL				  => FVAL,
     LVAL				  => LVAL,
     start_CI			=> start_CI,
-    start_CI_ack	=> start_CI_ack,
     WrFIFO				=> WrFIFO,
     WrData				=> WrData
   );

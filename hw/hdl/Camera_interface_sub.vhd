@@ -11,7 +11,6 @@ entity Camera_interface_sub is
 			FVAL			  	: in std_logic;
 			LVAL			  	: in std_logic;
 			start_CI			: in std_logic;
-      start_CI_ack  : out std_logic;
 			WrFIFO			  : out std_logic;
 			WrData			  : out std_logic_vector(15 downto 0)
 		);
@@ -41,7 +40,7 @@ architecture comp of Camera_interface_sub is
   signal green : std_logic_vector(11 downto 0);
   signal pixel : std_logic_vector(15 downto 0);
   signal sum : std_logic_vector(11 downto 0);
-  signal start_ack : std_logic := '0';
+  signal start : std_logic := '0';
   signal pixclk_sig : std_logic_vector(1 downto 0);
 
   --Fifo signals
@@ -111,7 +110,7 @@ begin
     elsif rising_edge(pixclk) then
       case state_count is
         when s_init =>
-          if start_CI = '1' then
+          if LVAL = '1' and FVAL = '1' then
             state_count <= s_inc_col;
           end if;
 
@@ -167,11 +166,14 @@ begin
     if nReset = '0' then
       state_color <= s_init;
     elsif rising_edge(clk) then
+      if start_CI = '1' then
+        start <= '1';
+      end if;
       -- Use last known value with current value to detect rising edges
       pixclk_sig <= pixclk_sig(0) & pixclk;
       case state_color is
         when s_init =>
-          if start_CI = '1' and row = x"000" and col = x"000" and LVAL = '1' and FVAL='1' then
+          if start = '1' and row = x"000" and col = x"000" and LVAL = '1' and FVAL='1' then
             state_color <= s_start;
             pix_max <= x"000";
           end if;
@@ -180,23 +182,19 @@ begin
           -- if idx_buffer = 320 then
           --   idx_buffer := 0;
           -- end if;
-          start_ack <= '1';
-          start_CI_ack <= '1';
-          --if pixclk = '1' then
-            if row(0) = '0' and col(0) = '0' then
-              state_color <= s_g1;
-              wrData_g <= data;
-              --buffer_g(idx_buffer) <= data;
-            elsif row(0) = '0' and col(0) = '1' then
-              state_color <= s_r;
-              wrData_r <= data;
-              --buffer_r(idx_buffer) <= data;
-            elsif row(0) = '1' and col(0) = '0' then
-              state_color <= s_b;
-            else
-              state_color <= s_g2;
-            end if;
-          --end if;
+          if row(0) = '0' and col(0) = '0' then
+            state_color <= s_g1;
+            wrData_g <= data;
+            --buffer_g(idx_buffer) <= data;
+          elsif row(0) = '0' and col(0) = '1' then
+            state_color <= s_r;
+            wrData_r <= data;
+            --buffer_r(idx_buffer) <= data;
+          elsif row(0) = '1' and col(0) = '0' then
+            state_color <= s_b;
+          else
+            state_color <= s_g2;
+          end if;
 
         -- Color green 1
         when s_g1 =>
@@ -235,8 +233,7 @@ begin
           WrFifo_r <= '0';
           if row = 479 and col = 639 and (LVAL = '0' or FVAL = '0')then
             state_color <= s_init;
-            start_ack <= '0';
-            start_CI_ack <= '0';
+            start <= '0';
           elsif pixclk_sig = "01" and LVAL = '1' and FVAL = '1' then
             state_color <= s_start;
           end if;
