@@ -12,7 +12,7 @@ entity DMA_sub is
 			Wr				: out std_logic;
 			DataWr			: out std_logic_vector(31 downto 0);
 			RdFifo			: out std_logic;
-			Fifo_empty		: in std_logic;
+			Fifo_almost_empty		: in std_logic;								--when there are less than 2 words
 			RdData			: in std_logic_vector(15 downto 0);
 			FBuff0			: in std_logic_vector(31 downto 0);
 			FBuff1			: in std_logic_vector(31 downto 0);
@@ -55,21 +55,22 @@ begin
 				when S_Idle =>
 					start <= '0';
 					irq <= '0';
-					if Fifo_empty = '0' then
+					if Fifo_almost_empty = '0' then
 						SM <= S_Acq;
+						RdFifo <= '1';
 					end if;
 				when S_Acq =>
-					RdFifo <= '1';
 					if acq = '0' then
-						SM <= S_Acq;
 						acq <= '1';
 						DataWr(15 downto 0) <= RdData;
+						SM <= S_Acq;
+						RdFifo <= '1';
 					else
 						SM <= S_Wait;
+						RdFifo <= '0';
 						acq <= '0';
 						DataWr(31 downto 16) <= RdData;
 					end if;
-					
 				when S_Wait =>
 					if WaitRequest = '0' then
 						SM <= S_Write;
@@ -79,7 +80,7 @@ begin
 					Wr <= '1';
 					
 				when S_Inc =>
-					if pixCount < to_unsigned(76800, pixCount'length) then
+					if pixCount < to_unsigned(76798, pixCount'length) then
 						SM <= S_Idle;
 					else
 						SM <= S_BuffInc;
