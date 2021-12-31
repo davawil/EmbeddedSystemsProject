@@ -21,7 +21,7 @@
    {
       datum baseAddress
       {
-         value = "268437568";
+         value = "268437536";
          type = "String";
       }
    }
@@ -261,8 +261,18 @@
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface
+   name="cameracontroller_0_camera"
+   internal="CameraController_0.Camera"
+   type="conduit"
+   dir="end" />
+ <interface
    name="cameracontroller_0_camera_clock"
    internal="CameraController_0.Camera_clock" />
+ <interface
+   name="cameracontroller_0_cameraclk"
+   internal="CameraController_0.CameraClk"
+   type="clock"
+   dir="start" />
  <interface
    name="cameracontroller_0_camerareset_n"
    internal="CameraController_0.CameraReset_n"
@@ -312,7 +322,7 @@
    name="cmos_sensor_output_generator_0"
    kind="cmos_sensor_output_generator"
    version="15.1"
-   enabled="1">
+   enabled="0">
   <parameter name="MAX_HEIGHT" value="480" />
   <parameter name="MAX_WIDTH" value="640" />
   <parameter name="PIX_DEPTH" value="12" />
@@ -872,8 +882,8 @@
    kind="altera_nios2_gen2"
    version="18.1"
    enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_DOMAIN" value="3" />
-  <parameter name="AUTO_CLK_RESET_DOMAIN" value="3" />
+  <parameter name="AUTO_CLK_CLOCK_DOMAIN" value="4" />
+  <parameter name="AUTO_CLK_RESET_DOMAIN" value="4" />
   <parameter name="AUTO_DEVICE" value="5CSEMA4U23C6" />
   <parameter name="AUTO_DEVICE_SPEEDGRADE" value="6" />
   <parameter name="bht_ramBlockType" value="Automatic" />
@@ -891,7 +901,7 @@
   <parameter name="dataAddrWidth" value="29" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='hps_0_bridges.f2h_sdram0_data' start='0x0' end='0x10000000' type='hps_bridge_avalon.f2h_sdram0_data' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x10000000' end='0x10000800' type='altera_nios2_gen2.debug_mem_slave' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x10000800' end='0x10000808' type='altera_avalon_jtag_uart.avalon_jtag_slave' /><slave name='i2c_0.avalon_slave' start='0x10000808' end='0x1000080C' type='i2c.avalon_slave' /><slave name='pio_leds.s1' start='0x10000810' end='0x10000820' type='altera_avalon_pio.s1' /><slave name='cmos_sensor_output_generator_0.avalon_slave' start='0x10000820' end='0x10000840' type='cmos_sensor_output_generator.avalon_slave' /><slave name='CameraController_0.avalon_slave' start='0x10000840' end='0x10000850' type='CameraController.avalon_slave' /><slave name='onchip_memory2_0.s1' start='0x10100000' end='0x10120000' type='altera_avalon_onchip_memory2.s1' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='hps_0_bridges.f2h_sdram0_data' start='0x0' end='0x10000000' type='hps_bridge_avalon.f2h_sdram0_data' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x10000000' end='0x10000800' type='altera_nios2_gen2.debug_mem_slave' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x10000800' end='0x10000808' type='altera_avalon_jtag_uart.avalon_jtag_slave' /><slave name='i2c_0.avalon_slave' start='0x10000808' end='0x1000080C' type='i2c.avalon_slave' /><slave name='pio_leds.s1' start='0x10000810' end='0x10000820' type='altera_avalon_pio.s1' /><slave name='CameraController_0.avalon_slave' start='0x10000820' end='0x10000830' type='CameraController.avalon_slave' /><slave name='onchip_memory2_0.s1' start='0x10100000' end='0x10120000' type='altera_avalon_onchip_memory2.s1' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -1137,7 +1147,7 @@
    start="nios2_gen2_0.data_master"
    end="CameraController_0.avalon_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x10000840" />
+  <parameter name="baseAddress" value="0x10000820" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1203,11 +1213,6 @@
   <parameter name="baseAddress" value="0x10100000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
- <connection
-   kind="clock"
-   version="18.1"
-   start="CameraController_0.CameraClk"
-   end="cmos_sensor_output_generator_0.clock" />
  <connection kind="clock" version="18.1" start="clk_0.clk" end="nios2_gen2_0.clk" />
  <connection kind="clock" version="18.1" start="clk_0.clk" end="jtag_uart_0.clk" />
  <connection kind="clock" version="18.1" start="clk_0.clk" end="pio_leds.clk" />
@@ -1232,17 +1237,6 @@
    version="18.1"
    start="clk_0.clk"
    end="hps_0.f2h_sdram0_clock" />
- <connection
-   kind="conduit"
-   version="18.1"
-   start="cmos_sensor_output_generator_0.cmos_sensor"
-   end="CameraController_0.Camera">
-  <parameter name="endPort" value="" />
-  <parameter name="endPortLSB" value="0" />
-  <parameter name="startPort" value="" />
-  <parameter name="startPortLSB" value="0" />
-  <parameter name="width" value="0" />
- </connection>
  <connection
    kind="interrupt"
    version="18.1"

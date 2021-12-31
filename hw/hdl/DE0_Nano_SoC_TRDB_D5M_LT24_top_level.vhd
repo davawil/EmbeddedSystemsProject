@@ -192,11 +192,15 @@ architecture rtl of DE0_Nano_SoC_TRDB_D5M_LT24_top_level is
             hps_0_io_hps_io_gpio_inst_GPIO53    : inout std_logic                     := 'X';
             hps_0_io_hps_io_gpio_inst_GPIO54    : inout std_logic                     := 'X';
             hps_0_io_hps_io_gpio_inst_GPIO61    : inout std_logic                     := 'X';
-			pio_leds_external_connection_export : out   std_logic_vector(7 downto 0);                     -- export
-			i2c_0_i2c_scl                       : inout std_logic                     := 'X';             -- scl
-			i2c_0_i2c_sda                       : inout std_logic                     := 'X';             -- sda
-			cameracontroller_0_pixclk_clk            : in    std_logic                     := 'X';             -- clk
-			cameracontroller_0_camerareset_n_reset_n : out   std_logic                                         -- reset_n
+            pio_leds_external_connection_export : out   std_logic_vector(7 downto 0);                     -- export
+            i2c_0_i2c_scl                       : inout std_logic                     := 'X';             -- scl
+            i2c_0_i2c_sda                       : inout std_logic                     := 'X';             -- sda
+            cameracontroller_0_pixclk_clk            : in    std_logic                     := 'X';             -- clk
+            cameracontroller_0_camerareset_n_reset_n : out   std_logic;
+            cameracontroller_0_camera_frame_valid    : in    std_logic                     := 'X';             -- frame_valid
+            cameracontroller_0_camera_line_valid     : in    std_logic                     := 'X';             -- line_valid
+            cameracontroller_0_camera_data           : in    std_logic_vector(11 downto 0) := (others => 'X'); -- data
+            cameracontroller_0_cameraclk_clk         : out   std_logic                                         -- clk                                 -- reset_n
         );
     end component soc_system;
 
@@ -270,12 +274,16 @@ begin
         hps_0_io_hps_io_gpio_inst_GPIO54    => HPS_KEY_N,
         hps_0_io_hps_io_gpio_inst_GPIO61    => HPS_GSENSOR_INT,
         pio_leds_external_connection_export => LED,
-		i2c_0_i2c_scl                       => GPIO_1_D5M_SCLK,                       --                    i2c_0_i2c.scl
-		i2c_0_i2c_sda                       => GPIO_1_D5M_SDATA,                       --                             .sda
-		reset_reset_n                       => KEY_N(0),                       						 --                        reset.reset_n
-		cameracontroller_0_pixclk_clk       => GPIO_1_D5M_PIXCLK,       										 --    cameracontroller_0_pixclk.clk
-		cameracontroller_0_camerareset_n_reset_n =>GPIO_1_D5M_RESET_N
+        i2c_0_i2c_scl                       => GPIO_1_D5M_SCLK,                       --                    i2c_0_i2c.scl
+        i2c_0_i2c_sda                       => GPIO_1_D5M_SDATA,                       --                             .sda
+        reset_reset_n                       => KEY_N(0),                       						 --                        reset.reset_n
+        cameracontroller_0_pixclk_clk       => GPIO_1_D5M_PIXCLK,       										 --    cameracontroller_0_pixclk.clk
+        cameracontroller_0_camerareset_n_reset_n => GPIO_1_D5M_RESET_N,
+        cameracontroller_0_camera_frame_valid    => GPIO_1_D5M_FVAL,    --        cameracontroller_0_camera.frame_valid
+        cameracontroller_0_camera_line_valid     => GPIO_1_D5M_LVAL,     --                                 .line_valid
+        cameracontroller_0_camera_data           => GPIO_1_D5M_D,           --                                 .data
+        cameracontroller_0_cameraclk_clk         => GPIO_1_D5M_XCLKIN
     );
-	
+
 
 end;
