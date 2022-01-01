@@ -14,7 +14,7 @@ architecture test of tb_DMA_sub is
 		signal clk			: std_logic;
 		signal nReset		: std_logic;
 		signal WaitRequest 	: std_logic;
-		signal Fifo_empty	: std_logic;
+		signal Fifo_almost_empty	: std_logic;
 		signal RdData		: std_logic_vector(15 downto 0);
 		signal FBuff0		: std_logic_vector(31 downto 0);
 		signal FBuff1		: std_logic_vector(31 downto 0);
@@ -33,7 +33,7 @@ dut : entity work.DMA_sub
 		clk      			=> clk,   	
 		nReset      		=> nReset,
 		WaitRequest 		=> WaitRequest,
-		Fifo_empty			=> Fifo_empty,
+		Fifo_almost_empty	=> Fifo_almost_empty,
 		irq					=> irq,
 		Address 			=> Address,
 		Wr					=> Wr,
@@ -72,7 +72,7 @@ begin
 	wait for CLK_PERIOD;
 	nReset <= '1';
 	WaitRequest <= '1';
-	Fifo_empty <= '1';
+	Fifo_almost_empty <= '1';
 	FBuff0 <= "11111111111111111111111111111111";
 	FBuff1 <= "10101010101010101010101010101010";
 	wait for CLK_PERIOD*4;
@@ -80,7 +80,7 @@ begin
 	wait for CLK_PERIOD;
 	start_DMA <= '0';
 	wait for CLK_PERIOD*4;
-	Fifo_empty <= '0';
+	Fifo_almost_empty <= '0';
 	wait for CLK_PERIOD*2;
 	--RdData <= "0011001100110011";
 	wait for CLK_PERIOD*8;

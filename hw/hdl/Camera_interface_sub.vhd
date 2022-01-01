@@ -112,6 +112,7 @@ begin
         when s_init =>
           if LVAL = '1' and FVAL = '1' then
             state_count <= s_inc_col;
+            col <= col + 1;
           end if;
 
         when s_inc_col =>
@@ -124,10 +125,10 @@ begin
         when s_inc_row =>
           col <= x"000";
           if row < x"1DF" then
-            if LVAL = '1' and FVAL = '1' then
+            --if LVAL = '1' and FVAL = '1' then
               state_count <= s_inc_col;
               row <= row + 1;
-            end if;
+            --end if;
           else
             state_count <= s_rst_row;
           end if;
@@ -150,9 +151,9 @@ begin
           shift_G <= highest_bit - 6;
           shift_RB <= highest_bit - 5;
           -- Transition only when the frame is valid again to not increase the column counter
-          if FVAL = '1' and LVAL = '1' then
-            state_count <= s_inc_col;
-          end if;
+          --if FVAL = '1' and LVAL = '1' then
+          state_count <= s_inc_col;
+          --end if;
       end case;
     end if;
   end process count_proc;
@@ -230,7 +231,7 @@ begin
           WrFIFO <= '0';
           WrFifo_g <= '0';
           WrFifo_r <= '0';
-          if row >= 479 and col >= 639 and (LVAL = '0' or FVAL = '0')then
+          if LVAL = '0' and FVAL = '0' then
             state_color <= s_init;
           elsif pixclk_sig = "01" and LVAL = '1' and FVAL = '1' then
             state_color <= s_start;

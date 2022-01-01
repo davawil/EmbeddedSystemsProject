@@ -55,7 +55,7 @@ architecture comp of Camera_controller is
 			Wr				: out std_logic;
 			DataWr			: out std_logic_vector(31 downto 0);
 			RdFifo			: out std_logic;
-			Fifo_empty		: in std_logic;
+			Fifo_almost_empty		: in std_logic;
 			RdData			: in std_logic_vector(15 downto 0);
 			FBuff0			: in std_logic_vector(31 downto 0);
 			FBuff1			: in std_logic_vector(31 downto 0);
@@ -93,8 +93,8 @@ architecture comp of Camera_controller is
 		signal FBuff0		: std_logic_vector(31 downto 0);
 		signal FBuff1		: std_logic_vector(31 downto 0);
 		signal start		: std_logic;
-		signal start_DMA	: std_logic;
-		signal start_CI		: std_logic;
+		--signal start_DMA	: std_logic;
+		--signal start_CI		: std_logic;
 		--FIFO signals
 		signal RdFifo		: std_logic;
 		signal WrFifo		: std_logic;
@@ -103,6 +103,7 @@ architecture comp of Camera_controller is
 		signal fifo_full	: std_logic;
 		signal fifo_empty 	: std_logic;
 		signal used_words 	: std_logic_vector(7 downto 0);
+		signal Fifo_almost_empty : std_logic;
 begin
 	fifo_inst : fifo PORT MAP (
 		clock	 	=> clk,
@@ -124,11 +125,11 @@ begin
 			Wr					=> AM_Write,
 			DataWr				=> AM_DataWr,
 			RdFifo				=> RdFifo,
-			Fifo_empty			=> fifo_empty,
+			Fifo_almost_empty	=> Fifo_almost_empty,
 			RdData				=> RdData,
 			FBuff0				=> FBuff0,
 			FBuff1				=> FBuff1,
-			start_DMA			=> start_DMA
+			start_DMA			=> start
 		);
 		slave : component AS_sub
 		port map(
@@ -153,4 +154,31 @@ begin
 			WrFIFO				=> WrFIFO,
 			WrData				=> WrData
 		);
+		
+		CameraReset_n <= nReset;
+		--CameraClk <= clk;
+		process(clk, nReset)
+			variable clkDiv_count	: natural range 0 to 8 := 0;	--count up to 500 000
+		begin
+			if nReset = '0' then
+				clkDiv_count 	:= 0;
+				CameraClk <= '0';
+			elsif rising_edge(clk) then
+				clkDiv_count 	:= clkDiv_count + 1;
+
+				if clkDiv_count = 8 then
+					CameraClk <= '1';
+					clkDiv_count	:= 0;
+				else
+					CameraClk <= '0';
+				end if;
+				
+				--PLACE HOLDER UNTIL ADDED Fifo_almost_empty
+				if used_words < "00000010" then
+					Fifo_almost_empty <= '1';
+				else 
+					Fifo_almost_empty <= '0';
+				end if;
+			end if;
+		end process;
 end comp;
