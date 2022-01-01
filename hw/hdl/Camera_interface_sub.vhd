@@ -125,10 +125,8 @@ begin
         when s_inc_row =>
           col <= x"000";
           if row < x"1DF" then
-            --if LVAL = '1' and FVAL = '1' then
-              state_count <= s_inc_col;
-              row <= row + 1;
-            --end if;
+            state_count <= s_inc_col;
+            row <= row + 1;
           else
             state_count <= s_rst_row;
           end if;
@@ -151,9 +149,7 @@ begin
           shift_G <= highest_bit - 6;
           shift_RB <= highest_bit - 5;
           -- Transition only when the frame is valid again to not increase the column counter
-          --if FVAL = '1' and LVAL = '1' then
           state_count <= s_inc_col;
-          --end if;
       end case;
     end if;
   end process count_proc;
