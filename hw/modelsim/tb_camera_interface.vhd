@@ -75,11 +75,19 @@ begin
 
 
   simulation: process
-    variable rise_pwm:time;
-    variable diff:time;
   begin
 
+    wait for CLK_PERIOD;
+
     for frames in 0 to 2 loop
+
+      start_CI <= '1';
+        wait for CLK_PERIOD;
+      start_CI <= '0';
+
+      wait for CLK_PERIOD;
+
+      wait until rising_edge(pixclk);
       for row in 0 to 479 loop
 
         wait for 10*PIXCLK_PERIOD;
@@ -89,9 +97,7 @@ begin
         wait for PIXCLK_PERIOD;
 
         LVAL <= '1';
-        start_CI <= '1';
-        wait for CLK_PERIOD;
-        start_CI <= '0';
+
 
         for col in 0 to 639 loop
           data <= std_logic_vector(to_unsigned(col, 12));
@@ -105,7 +111,7 @@ begin
         FVAL <= '0';
 
       end loop;
-      start_CI <= '0';
+
       wait for 50*PIXCLK_PERIOD;
 
     end loop;
@@ -115,14 +121,34 @@ begin
     wait for PIXCLK_PERIOD;
 
     LVAL <= '1';
-    start_CI <= '1';
+    --start_CI <= '1';
     wait for CLK_PERIOD;
     start_CI <= '0';
 
-    for col in 0 to 15 loop
-      data <= std_logic_vector(to_unsigned(col, 12));
+    for row in 0 to 3 loop
+
+      wait for 10*PIXCLK_PERIOD;
+
+      FVAL <= '1';
+
       wait for PIXCLK_PERIOD;
+
+      LVAL <= '1';
+
+
+      for col in 0 to 639 loop
+        data <= std_logic_vector(to_unsigned(col, 12));
+        wait for PIXCLK_PERIOD;
+      end loop;
+
+      LVAL <= '0';
+
+      wait for PIXCLK_PERIOD;
+
+      FVAL <= '0';
+
     end loop;
+
     nReset <= '0';
     wait for PIXCLK_PERIOD;
     nReset <= '1';
@@ -133,6 +159,7 @@ begin
     wait for PIXCLK_PERIOD;
 
     LVAL <= '1';
+
     start_CI <= '1';
     wait for CLK_PERIOD;
     start_CI <= '0';

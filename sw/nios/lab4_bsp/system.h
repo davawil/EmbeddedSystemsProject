@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2_0' in SOPC Builder design 'soc_system'
  * SOPC Builder design path: /home/vm/Documents/EmbeddedSystemsProject/hw/quartus/soc_system.sopcinfo
  *
- * Generated: Thu Dec 30 16:12:44 CET 2021
+ * Generated: Fri Dec 31 15:29:33 CET 2021
  */
 
 /*
@@ -198,6 +198,14 @@
 #define ALT_STDOUT_PRESENT
 #define ALT_STDOUT_TYPE "altera_avalon_jtag_uart"
 #define ALT_SYSTEM_NAME "soc_system"
+
+
+/*
+ * altera_hostfs configuration
+ *
+ */
+
+#define ALTERA_HOSTFS_NAME "/mnt/host"
 
 
 /*

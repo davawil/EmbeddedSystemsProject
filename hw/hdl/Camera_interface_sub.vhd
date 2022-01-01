@@ -119,8 +119,7 @@ begin
         when s_inc_col =>
           if col >= x"27F" then --0x27F = 639
               state_count <= s_inc_row;
-          end if;
-          if FVAL = '1' and LVAL = '1' then
+          elsif FVAL = '1' and LVAL = '1' then
             col <= col + 1;
           end if;
 
@@ -236,7 +235,7 @@ begin
           WrFIFO <= '0';
           WrFifo_g <= '0';
           WrFifo_r <= '0';
-          if row = 479 and col = 639 and (LVAL = '0' or FVAL = '0')then
+          if row >= 479 and col >= 639 and (LVAL = '0' or FVAL = '0')then
             state_color <= s_init;
           elsif pixclk_sig = "01" and LVAL = '1' and FVAL = '1' then
             state_color <= s_start;
