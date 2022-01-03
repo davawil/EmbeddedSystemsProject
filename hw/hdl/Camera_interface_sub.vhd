@@ -31,7 +31,7 @@ architecture comp of Camera_interface_sub is
 
 
   --Signals merge_colors_proc
-  type state_merge_colors is (s_init, s_start, s_g1, s_r, s_b, s_g2, s_wait, s_g, s_avg_g, s_merge, s_wr_fifo);
+  type state_merge_colors is (s_init, s_start, s_g, s_shift, s_merge, s_wr_fifo, s_wait);
   signal state_color : state_merge_colors;
   signal green_1 : std_logic_vector(11 downto 0);
   signal red : std_logic_vector(11 downto 0);
@@ -54,8 +54,6 @@ architecture comp of Camera_interface_sub is
   signal full_r : std_logic;
   signal RdData_g : std_logic_vector(11 downto 0);
   signal RdData_r : std_logic_vector(11 downto 0);
-  signal wrData_g : std_logic_vector(11 downto 0);
-  signal wrData_r : std_logic_vector(11 downto 0);
   signal used_words_g : std_logic_vector(8 downto 0);
   signal used_words_r : std_logic_vector(8 downto 0);
 
@@ -72,7 +70,7 @@ architecture comp of Camera_interface_sub is
       wrreq		: IN STD_LOGIC ;
       empty		: OUT STD_LOGIC ;
       full		: OUT STD_LOGIC ;
-      q		: OUT STD_LOGIC_VECTOR (11 DOWNTO 0);
+      q		    : OUT STD_LOGIC_VECTOR (11 DOWNTO 0);
       usedw		: OUT STD_LOGIC_VECTOR (8 DOWNTO 0)
     );
     end component fifo_color;
@@ -80,7 +78,7 @@ architecture comp of Camera_interface_sub is
 begin
   fifo_g : fifo_color PORT MAP (
 		clock	 	=> clk,
-		data	 	=> wrData_g,
+		data	 	=> data,
 		rdreq	 	=> RdFifo_g,
 		wrreq	 	=> WrFifo_g,
 		empty	 	=> empty_g,
@@ -91,7 +89,7 @@ begin
 
   fifo_r : fifo_color PORT MAP (
 		clock	 	=> clk,
-		data	 	=> wrData_r,
+		data	 	=> data,
 		rdreq	 	=> RdFifo_r,
 		wrreq	 	=> WrFifo_r,
 		empty	 	=> empty_r,
@@ -114,23 +112,21 @@ begin
         when s_init =>
           if LVAL = '1' and FVAL = '1' then
             state_count <= s_inc_col;
+            col <= col + 1;
           end if;
 
         when s_inc_col =>
           if col >= x"27F" then --0x27F = 639
               state_count <= s_inc_row;
-          end if;
-          if FVAL = '1' and LVAL = '1' then
+          elsif FVAL = '1' and LVAL = '1' then
             col <= col + 1;
           end if;
 
         when s_inc_row =>
           col <= x"000";
           if row < x"1DF" then
-            if LVAL = '1' and FVAL = '1' then
-              state_count <= s_inc_col;
-              row <= row + 1;
-            end if;
+            state_count <= s_inc_col;
+            row <= row + 1;
           else
             state_count <= s_rst_row;
           end if;
@@ -153,9 +149,7 @@ begin
           shift_G <= highest_bit - 6;
           shift_RB <= highest_bit - 5;
           -- Transition only when the frame is valid again to not increase the column counter
-          if FVAL = '1' and LVAL = '1' then
-            state_count <= s_inc_col;
-          end if;
+          state_count <= s_inc_col;
       end case;
     end if;
   end process count_proc;
@@ -184,73 +178,32 @@ begin
           end if;
 
         when s_start =>
-          -- if idx_buffer = 320 then
-          --   idx_buffer := 0;
-          -- end if;
           if row(0) = '0' and col(0) = '0' then
-            state_color <= s_g1;
-            wrData_g <= data;
-            --buffer_g(idx_buffer) <= data;
+            WrFifo_g <= '1';
+            state_color <= s_wait;
           elsif row(0) = '0' and col(0) = '1' then
-            state_color <= s_r;
-            wrData_r <= data;
-            --buffer_r(idx_buffer) <= data;
+            WrFifo_r <= '1';
+            state_color <= s_wait;
           elsif row(0) = '1' and col(0) = '0' then
-            state_color <= s_b;
+            blue <= data;
+            state_color <= s_wait;
           else
-            state_color <= s_g2;
-          end if;
-
-        -- Color green 1
-        when s_g1 =>
-          WrFifo_g <= '1';
-          --WrFifo_r <= '0';
-          --idx_buffer := idx_buffer + 1;
-          state_color <= s_wait;
-
-        -- Color red
-        when s_r =>
-          WrFifo_r <= '1';
-          --WrFifo_g <= '0';
-          --idx_buffer := idx_buffer + 1;
-          state_color <= s_wait;
-
-        -- Color blue
-        when s_b =>
-          blue <= data;
-          state_color <= s_wait;
-
-        -- Color green 2
-        when s_g2 =>
-          green_2 <= data;
-          RdFifo_g <= '1';
-          RdFifo_r <= '1';
-          red <= RdData_r;
-          --red <= buffer_r(idx_buffer);
-          green_1 <= RdData_g;
-          --green_1 <= buffer_g(idx_buffer);
-
-          state_color <= s_g;
-
-        when s_wait =>
-          WrFIFO <= '0';
-          WrFifo_g <= '0';
-          WrFifo_r <= '0';
-          if row = 479 and col = 639 and (LVAL = '0' or FVAL = '0')then
-            state_color <= s_init;
-          elsif pixclk_sig = "01" and LVAL = '1' and FVAL = '1' then
-            state_color <= s_start;
+            green_2 <= data;
+            RdFifo_g <= '1';
+            RdFifo_r <= '1';
+            red <= RdData_r;
+            green_1 <= RdData_g;
+            state_color <= s_g;
           end if;
 
         when s_g =>
-          ----idx_buffer := idx_buffer + 1;
           RdFifo_g <= '0';
           RdFifo_r <= '0';
           sum <= (green_1 or red or blue or green_2);
           green <= std_logic_vector(shift_right(unsigned(green_1), 1) + shift_right(unsigned(green_2), 1));
-          state_color <= s_avg_g;
+          state_color <= s_shift;
 
-        when s_avg_g =>
+        when s_shift =>
           red <= std_logic_vector(shift_right(unsigned(red), shift_RB));
           green <= std_logic_vector(shift_right(unsigned(green), shift_G));
           blue <= std_logic_vector(shift_right(unsigned(blue), shift_RB));
@@ -269,6 +222,17 @@ begin
             pix_max <= sum;
           end if;
           state_color <= s_wait;
+
+        when s_wait =>
+          WrFIFO <= '0';
+          WrFifo_g <= '0';
+          WrFifo_r <= '0';
+          if LVAL = '0' and FVAL = '0' then
+            state_color <= s_init;
+          elsif pixclk_sig = "01" and LVAL = '1' and FVAL = '1' then
+            state_color <= s_start;
+          end if;
+
       end case;
     end if;
   end process merge_colors_proc;
