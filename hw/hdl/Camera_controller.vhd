@@ -160,22 +160,22 @@ begin
 		);
 
   CameraReset_n <= nReset;
-  --CameraClk <= clk;
+  CameraClk <= clk;
   process(clk, nReset)
     variable clkDiv_count	: natural range 0 to 8 := 0;	--count up to 500 000
   begin
     if nReset = '0' then
       clkDiv_count 	:= 0;
-      CameraClk <= '0';
+      --CameraClk <= '0';
     elsif rising_edge(clk) then
-      clkDiv_count 	:= clkDiv_count + 1;
+      -- clkDiv_count 	:= clkDiv_count + 1;
 
-      if clkDiv_count = 8 then
-        CameraClk <= '1';
-        clkDiv_count	:= 0;
-      else
-        CameraClk <= '0';
-      end if;
+      -- if clkDiv_count = 8 then
+      --   CameraClk <= '1';
+      --   clkDiv_count	:= 0;
+      -- else
+      --   CameraClk <= '0';
+      -- end if;
       --PLACE HOLDER UNTIL ADDED Fifo_almost_empty
       if used_words < "00000010" then
         Fifo_almost_empty <= '1';

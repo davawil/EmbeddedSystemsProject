@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2_0' in SOPC Builder design 'soc_system'
  * SOPC Builder design path: /home/vm/Documents/EmbeddedSystemsProject/hw/quartus/soc_system.sopcinfo
  *
- * Generated: Sat Jan 01 22:01:40 CET 2022
+ * Generated: Mon Jan 03 16:35:41 CET 2022
  */
 
 /*
@@ -235,7 +235,7 @@
 
 /*
  * i2c_0 configuration
- *in
+ *
  */
 
 #define ALT_MODULE_CLASS_i2c_0 i2c
