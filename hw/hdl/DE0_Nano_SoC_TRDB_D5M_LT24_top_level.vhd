@@ -196,11 +196,11 @@ architecture rtl of DE0_Nano_SoC_TRDB_D5M_LT24_top_level is
             i2c_0_i2c_scl                       : inout std_logic                     := 'X';             -- scl
             i2c_0_i2c_sda                       : inout std_logic                     := 'X';             -- sda
             cameracontroller_0_pixclk_clk            : in    std_logic                     := 'X';             -- clk
-            cameracontroller_0_camerareset_n_reset_n : out   std_logic;
+            cameracontroller_0_camerareset_n_reset_n : out   std_logic;                                        -- reset_n
             cameracontroller_0_camera_frame_valid    : in    std_logic                     := 'X';             -- frame_valid
             cameracontroller_0_camera_line_valid     : in    std_logic                     := 'X';             -- line_valid
             cameracontroller_0_camera_data           : in    std_logic_vector(11 downto 0) := (others => 'X'); -- data
-            cameracontroller_0_cameraclk_clk         : out   std_logic                                         -- clk                        -- reset_n
+            cameracontroller_0_cameraclk_clk         : out   std_logic                                         -- clk
         );
     end component soc_system;
 

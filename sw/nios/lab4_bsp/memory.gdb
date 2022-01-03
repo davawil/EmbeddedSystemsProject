@@ -3,7 +3,7 @@
 # Machine generated for CPU 'nios2_gen2_0' in SOPC Builder design 'soc_system'
 # SOPC Builder design path: /home/vm/Documents/EmbeddedSystemsProject/hw/quartus/soc_system.sopcinfo
 #
-# Generated: Thu Dec 30 16:12:44 CET 2021
+# Generated: Sat Jan 01 21:52:21 CET 2022
 
 # DO NOT MODIFY THIS FILE
 #
