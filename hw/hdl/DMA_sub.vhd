@@ -21,7 +21,9 @@ entity DMA_sub is
 	end DMA_sub;
 
 architecture comp of DMA_sub is
-	type State is(S_Init, S_Idle, S_Acq, S_Wait, S_Write, S_Inc, S_BuffInc, S_Hold);
+	--type State is(S_Init, S_Idle, S_Acq, S_Wait, S_Write, S_Inc, S_BuffInc, S_Hold);
+	type State is(S_Init, S_Idle, S_Acq, S_Write, S_Inc, S_BuffInc, S_Hold);
+
 
 	signal SM			: State 				:= S_Init;
 	signal acq			: std_logic 			:= '0';
@@ -66,17 +68,20 @@ begin
 						SM <= S_Acq;
 						RdFifo <= '1';
 					else
-						SM <= S_Wait;
+						--SM <= S_Wait;
+						SM <= S_Write;
 						RdFifo <= '0';
 						acq <= '0';
 						DataWr(31 downto 16) <= RdData;
 					end if;
-				when S_Wait =>
-					if WaitRequest = '0' then
-						SM <= S_Write;
-					end if;
+				--when S_Wait =>
+					--if WaitRequest = '0' then
+						--SM <= S_Write;
+					--end if;
 				when S_Write =>
-					SM <= S_Inc;
+					if WaitRequest = '0' then
+						SM <= S_Inc;
+					end if;
 					Wr <= '1';
 
 				when S_Inc =>

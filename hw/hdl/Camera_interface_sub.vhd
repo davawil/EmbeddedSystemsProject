@@ -20,7 +20,8 @@ architecture comp of Camera_interface_sub is
 
 
   --Signals count_proc
-	type state_count_type is (s_init, s_inc_col, s_inc_row, s_rst_row, s_highest_bit, s_rst_max);
+	type state_count_type is (s_init, s_inc_col, s_highest_bit, s_rst_max);
+	--type state_count_type is (s_init, s_inc_col, s_inc_row, s_rst_row, s_highest_bit, s_rst_max);
   signal state_count : state_count_type;
   signal col : unsigned(11 downto 0) := (others => '0');
   signal row : unsigned(11 downto 0) := (others => '0');
@@ -117,24 +118,31 @@ begin
 
         when s_inc_col =>
           if col >= x"27F" then --0x27F = 639
-              state_count <= s_inc_row;
+              col <= x"000";
+              if row < x"1DF" then --0x1DF = 479
+                row <= row + 1;
+              else
+                row <= x"000";
+                highest_bit <= 6;
+                state_count <= s_highest_bit;
+              end if;
           elsif FVAL = '1' and LVAL = '1' then
             col <= col + 1;
           end if;
 
-        when s_inc_row =>
-          col <= x"000";
-          if row < x"1DF" then
-            state_count <= s_inc_col;
-            row <= row + 1;
-          else
-            state_count <= s_rst_row;
-          end if;
+        -- when s_inc_row =>
+        --   col <= x"000";
+        --   if row < x"1DF" then
+        --     state_count <= s_inc_col;
+        --     row <= row + 1;
+        --   else
+        --     state_count <= s_rst_row;
+        --   end if;
 
-        when s_rst_row =>
-          row <= x"000";
-          highest_bit <= 6;
-          state_count <= s_highest_bit;
+        -- when s_rst_row =>
+        --   row <= x"000";
+        --   highest_bit <= 6;
+        --   state_count <= s_highest_bit;
 
         when s_highest_bit =>
           for bit_i in 11 downto 0 loop
