@@ -143,8 +143,6 @@ begin
 					C_data <= green;
 				end if;
 			end if;
-      row_tb <= to_unsigned(row, row_tb'length);
-      col_tb <= to_unsigned(col, col_tb'length);
 		end if;
 	end if;
 end process;

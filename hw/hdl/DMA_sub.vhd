@@ -1,5 +1,5 @@
-library ieee; 
-use ieee.std_logic_1164.all; 
+library ieee;
+use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity DMA_sub is
@@ -23,7 +23,7 @@ entity DMA_sub is
 architecture comp of DMA_sub is
 	type State is(S_Init, S_Idle, S_Acq, S_Wait, S_Write, S_Inc, S_BuffInc, S_Hold);
 
-	signal SM			: State 				:= S_Idle;	
+	signal SM			: State 				:= S_Init;
 	signal acq			: std_logic 			:= '0';
 	signal pixCount		: unsigned(31 downto 0) := (others => '0');
 	signal buffSel		: std_logic 			:= '0';
@@ -78,7 +78,7 @@ begin
 				when S_Write =>
 					SM <= S_Inc;
 					Wr <= '1';
-					
+
 				when S_Inc =>
 					if pixCount < to_unsigned(76798, pixCount'length) then
 						SM <= S_Idle;
@@ -88,18 +88,18 @@ begin
 					Wr <= '0';
 					int_Address <= int_Address + 4;
 					pixCount <= pixCount + 2;
-				
+
 				when S_BuffInc =>
 					buffSel <= not buffSel;
 					SM <= S_Hold;
-					
+
 				when S_Hold =>
 					if buffSel = '0' then
 						int_Address <= unsigned(FBuff0);
 					else
 						int_Address <= unsigned(FBuff1);
 					end if;
-					pixCount <= to_unsigned(0, pixCount'length);		
+					pixCount <= to_unsigned(0, pixCount'length);
 					irq <= '1';
 					if start = '1' then
 						SM <= S_Idle;

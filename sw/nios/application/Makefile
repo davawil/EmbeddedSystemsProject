@@ -142,9 +142,15 @@ ACDS_VERSION := 18.1
 ELF := lab4.elf
 
 # Paths to C, C++, and assembly source files.
-C_SRCS := hello_world.c
+C_SRCS := hello_world.c i2c/i2c.c
 CXX_SRCS :=
 ASM_SRCS :=
+#C_SRCS += cmos_sensor_output_generator/cmos_sensor_output_generator.c
+#C_SRCS += demo_256_MB_memory_access.c
+#C_SRCS += demo_cmos_sensor_output_generator.c
+#C_SRCS += demo_i2c.c
+#C_SRCS += hello_world.c
+#C_SRCS += i2c/i2c.c
 
 
 # Path to root of object file tree.

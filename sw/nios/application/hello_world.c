@@ -1,18 +1,3 @@
-/*
- * "Hello World" example.
- *
- * This example prints 'Hello from Nios II' to the STDOUT stream. It runs on
- * the Nios II 'standard', 'full_featured', 'fast', and 'low_cost' example
- * designs. It runs with or without the MicroC/OS-II RTOS and requires a STDOUT
- * device in your system's hardware.
- * The memory footprint of this hosted application is ~69 kbytes by default
- * using the standard reference design.
- *
- * For a reduced footprint version of this template, and an explanation of how
- * to reduce the memory footprint for a given application, see the
- * "small_hello_world" template.
- *
- */
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
@@ -20,9 +5,10 @@
 #include "system.h"
 #include "io.h"
 #include "i2c/i2c.h"
+#include "sys/alt_irq.h"
+#include "altera_avalon_pio_regs.h"
 
 #include <stdint.h>
-#include <sys/alt_irq.h>
 #include "cmos_sensor_output_generator/cmos_sensor_output_generator.h"
 #include "cmos_sensor_output_generator/cmos_sensor_output_generator_regs.h"
 
@@ -41,8 +27,8 @@
 #define CLK_FREQ 50000000 //50MHz
 
 // Camera configuration
-#define COLUMNS 640
-#define ROWS 480
+#define COLUMNS_CAM 640
+#define ROWS_CAM 480
 #define ROW_SIZE_ADDR 3
 #define COL_SIZE_ADDR 4
 #define DIV_CLK_ADDR 10
@@ -51,8 +37,6 @@
 
 #define I2C_FREQ              (50000000) /* Clock frequency driving the i2c core: 50 MHz in this example (ADAPT TO YOUR DESIGN) */
 #define TRDB_D5M_I2C_ADDRESS  (0xba)
-
-#define TRDB_D5M_0_I2C_0_BASE (0x0000)   /* i2c base address from system.h (ADAPT TO YOUR DESIGN) */
 
 int currentFrame;
 /**
@@ -89,16 +73,17 @@ void init_TRDB_D5M() {
 	i2c_init(&i2c, CLK_FREQ);
 
 	// Set column and row size
-	trdb_d5m_write(&i2c, ROW_SIZE_ADDR, 4*ROWS-1);
-	trdb_d5m_write(&i2c, COL_SIZE_ADDR, 4*COLUMNS-1);
+	trdb_d5m_write(&i2c, ROW_SIZE_ADDR, 4*ROWS_CAM-1);
+	trdb_d5m_write(&i2c, COL_SIZE_ADDR, 4*COLUMNS_CAM-1);
 
-	// Divide pixclk by 8
-	trdb_d5m_write(&i2c, DIV_CLK_ADDR, 0x0004);
+	// Divide pixclk by 1 -- xclkin is already divided by 8
+	trdb_d5m_write(&i2c, DIV_CLK_ADDR, 0x0000);
 
 	// Set skip and binning
 	trdb_d5m_write(&i2c, ROW_MODE_ADDR, 0x0033); // row skip 4x, row bin 4x
 	trdb_d5m_write(&i2c, COL_MODE_ADDR, 0x0033); // col skip 4x, col bin 4x
 }
+
 
 int load_image(uint32_t addr){
 	//char* filename = "/mnt/host/image.ppm";
@@ -114,21 +99,42 @@ int load_image(uint32_t addr){
 	fprintf(foutput, "320 240\n");
 	//write: largest possible value (6 bits)
 	fprintf(foutput, "63\n");
-	for(int i = 0; i < FRAME_SIZE; i++){
-		uint16_t pixel = IORD_16DIRECT(addr, i);
-		//REAL CAMERA INTERFACE
-		int red = (int)((pixel & MASK_RED) >> OFF_RED);
-		int green = (int)((pixel & MASK_GREEN) >> OFF_GREEN);
-		int blue = (int)((pixel & MASK_BLUE) >> OFF_BLUE);
-		fprintf(foutput, "%d %d %d\n", red, green, blue);
-
-		//MOCK CAMERA INTERFACE
-		//one pixel value is written per fifo entry, use that value for a gray-scale pixel
-		//fprintf(foutput, "%d %d %d\n", pixel, pixel, pixel);
+	for(uint32_t row = 0; row < 240; row++) {
+		printf("Row: %d\n", row);
+		for(uint32_t col = 0; col < 320; col++) {
+			uint32_t offset = 2 * (row * 240 + col);
+			uint16_t pixel = IORD_16DIRECT(addr, offset);
+			//REAL CAMERA INTERFACE
+			int red = (int)((pixel & MASK_RED) >> OFF_RED);
+			int green = (int)((pixel & MASK_GREEN) >> OFF_GREEN);
+			int blue = (int)((pixel & MASK_BLUE) >> OFF_BLUE);
+			if (col < 319){
+				fprintf(foutput, "%d %d %d ", red, green, blue);
+			}
+			else{
+				fprintf(foutput, "%d %d %d\n", red, green, blue);
+			}
+		}
 	}
+	// for(int i = 0; i < FRAME_SIZE; i++){
+	// 	uint16_t pixel = IORD_16DIRECT(addr, i);
+	// 	//REAL CAMERA INTERFACE
+	// 	int red = (int)((pixel & MASK_RED) >> OFF_RED);
+	// 	int green = (int)((pixel & MASK_GREEN) >> OFF_GREEN);
+	// 	int blue = (int)((pixel & MASK_BLUE) >> OFF_BLUE);
+	// 	fprintf(foutput, "%d %d %d\n", red, green, blue);
+	// 	printf("Pixel %d\n", i);
+
+	// 	//MOCK CAMERA INTERFACE
+	// 	//one pixel value is written per fifo entry, use that value for a gray-scale pixel
+	// 	//fprintf(foutput, "%d %d %d\n", pixel, pixel, pixel);
+	// }
+	printf("Finished writing image\n");
 	fclose(foutput);
 	return 0;
 }
+
+
 static void CameraControllerISR(void *unused){
 	uint32_t addr;
 	if(currentFrame == 0){
@@ -140,31 +146,31 @@ static void CameraControllerISR(void *unused){
 	load_image(addr);
 	currentFrame = (currentFrame + 1)%2;
 	//restart Camera Controller
-	IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, CAMERA_CONTROLLER_START, 1);
+	IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, 4*CAMERA_CONTROLLER_START, 1);
 	//cmos_sensor_output_generator_start(&cmos_sensor_output_generator);
 }
 int main()
 {
-//	currentFrame = 0;
-//	//set up interrupt handlers
-//	int fail = alt_ic_isr_register(0,
-//			0, CameraControllerISR, NULL, 0x0);
-//	if(fail)
-//		return 1;
-//	alt_ic_irq_enable(0,0);
+	currentFrame = 0;
+	//Enable interrupts for camera controller
+	IOWR_ALTERA_AVALON_PIO_IRQ_MASK(CAMERACONTROLLER_0_BASE, 0xF);
+	//set up interrupt handlers
+	int fail = alt_ic_isr_register(0,
+			0, CameraControllerISR, NULL, 0x0);
+	if(fail)
+		return 1;
+	alt_ic_irq_enable(0,0);
 
-	//init_TRDB_D5M();
-	//usleep(1000*1000);
+	init_TRDB_D5M();
+	usleep(1000*1000);
 
-
-	//IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, CAMERA_CONTROLLER_FRAME0, FRAME0);
-	//IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, CAMERA_CONTROLLER_FRAME1, FRAME1);
-	//IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, CAMERA_CONTROLLER_START, 1);
-	//init_sensor();
 	printf("Hello from Nios II!\n");
-
-
-
-
+	IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, 4*CAMERA_CONTROLLER_FRAME0, FRAME0);
+	IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, 4*CAMERA_CONTROLLER_FRAME1, FRAME1);
+	IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, 4*CAMERA_CONTROLLER_START, 1);
+	usleep(100*1000);
+	//load_image(FRAME0);
+	printf("Finished loading image\n");
+	while(1);
 	return 0;
 }
