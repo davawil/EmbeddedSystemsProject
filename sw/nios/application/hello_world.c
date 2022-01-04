@@ -78,7 +78,7 @@ void init_TRDB_D5M() {
 	trdb_d5m_write(&i2c, COL_SIZE_ADDR, 4*COLUMNS_CAM-1);
 
 	// Divide pixclk by 1 -- xclkin is already divided by 8
-	trdb_d5m_write(&i2c, DIV_CLK_ADDR, 0x0003);
+	trdb_d5m_write(&i2c, DIV_CLK_ADDR, 0x0004);
 
 	// Set skip and binning
 	trdb_d5m_write(&i2c, ROW_MODE_ADDR, 0x0033); // row skip 4x, row bin 4x
@@ -100,24 +100,8 @@ int load_image(uint32_t addr){
 	fprintf(foutput, "320 240\n");
 	//write: largest possible value (6 bits)
 	fprintf(foutput, "31\n");
-//	for(uint32_t row = 0; row < 240; row++) {
-//		//printf("Row: %d\n", row);
-//		for(uint32_t col = 0; col < 320; col++) {
-//			uint32_t offset = 2 * (row * 240 + col);
-//			uint16_t pixel = IORD_16DIRECT(addr, offset);
-//			//REAL CAMERA INTERFACE
-//			int red = (int)((pixel & MASK_RED) >> OFF_RED);
-//			int green = (int)((pixel & MASK_GREEN) >> OFF_GREEN);
-//			int blue = (int)((pixel & MASK_BLUE) >> OFF_BLUE);
-//			if (col < 319){
-//				fprintf(foutput, "%d %d %d ", red, green, blue);
-//			}
-//			else{
-//				fprintf(foutput, "%d %d %d\n", red, green, blue);
-//			}
-//		}
-//	}
-	 for(int i = 0; i < FRAME_SIZE; i++){
+
+	for(int i = 0; i < FRAME_SIZE; i++){
 	 	uint16_t pixel = IORD_16DIRECT(addr, 2*i);
 	 	//REAL CAMERA INTERFACE
 	 	int red = (int)((pixel & MASK_RED) >> OFF_RED);
@@ -146,9 +130,14 @@ static void CameraControllerISR(void *unused){
 	else{
 		addr = FRAME1;
 	}
-	if (iter % 100 == 0){
+	//load_image(addr);
+	if (iter % 20 == 0){
 		load_image(addr);
 	}
+	if (iter == 1){
+		load_image(addr);
+	}
+	//load_image(addr);
 	currentFrame = (currentFrame + 1)%2;
 	//restart Camera Controller
 	IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, 4*CAMERA_CONTROLLER_START, 1);
@@ -159,7 +148,7 @@ int main()
 	iter = 0;
 	currentFrame = 0;
 	//Enable interrupts for camera controller
-	IOWR_ALTERA_AVALON_PIO_IRQ_MASK(CAMERACONTROLLER_0_BASE, 0xF);
+	//IOWR_ALTERA_AVALON_PIO_IRQ_MASK(CAMERACONTROLLER_0_BASE, 0xF);
 	//set up interrupt handlers
 	int fail = alt_ic_isr_register(0,
 			0, CameraControllerISR, NULL, 0x0);

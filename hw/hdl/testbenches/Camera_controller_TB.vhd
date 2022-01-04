@@ -97,7 +97,7 @@ cam_output : process(C_pixclk)
 
 	variable red : std_logic_vector(11 downto 0) 	:= x"00f";
 	variable green : std_logic_vector(11 downto 0) 	:= x"0f0";
-	variable blue : std_logic_vector(11 downto 0) 	:= x"f00";
+	variable blue : std_logic_vector(11 downto 0) 	:= x"00f";
 begin
 	if rising_edge(C_pixclk) and start_Camera = true then
 
@@ -125,22 +125,22 @@ begin
 
 
 			--if odd row (starting from 1)
-			if row mod 2 = 1 then
+			if row mod 2 = 0 then
 				--if odd column (starting from 1)
-				if col mod 2 = 1 then
-					C_data <= green;
+				if col mod 2 = 0 then
+					C_data <= std_logic_vector(to_unsigned(col, 12));
 				--if even column (starting from 1)
 				else
-					C_data <= red;
+					C_data <= std_logic_vector(to_unsigned(col, 12));
 				end if;
 			--if odd even (starting from 1)
 			else
 				--if odd column (starting from 1)
-				if col mod 2 = 1 then
-					C_data <= blue;
+				if col mod 2 = 0 then
+					C_data <= std_logic_vector(to_unsigned(col, 12));
 				--if even column (starting from 1)
 				else
-					C_data <= green;
+					C_data <= std_logic_vector(to_unsigned(col, 12));
 				end if;
 			end if;
 		end if;

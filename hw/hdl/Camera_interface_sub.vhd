@@ -212,15 +212,18 @@ begin
           state_color <= s_shift;
 
         when s_shift =>
-          red <= std_logic_vector(shift_right(unsigned(red), shift_RB));
-          green <= std_logic_vector(shift_right(unsigned(green), shift_G));
-          blue <= std_logic_vector(shift_right(unsigned(blue), shift_RB));
+          -- red <= std_logic_vector(shift_right(unsigned(red), shift_RB));
+          -- green <= std_logic_vector(shift_right(unsigned(green), shift_G));
+          -- blue <= std_logic_vector(shift_right(unsigned(blue), shift_RB));
           state_color <= s_merge;
 
         when s_merge =>
-          pixel(4 downto 0) <= blue(4 downto 0);
-          pixel(10 downto 5) <= green(5 downto 0);
-          pixel(15 downto 11) <= red(4 downto 0);
+          -- pixel(4 downto 0) <= blue(4 downto 0);
+          -- pixel(10 downto 5) <= green(5 downto 0);
+          -- pixel(15 downto 11) <= red(4 downto 0);
+          pixel(4 downto 0) <= blue(11 downto 7);
+          pixel(10 downto 5) <= green(11 downto 6);
+          pixel(15 downto 11) <= red(11 downto 7);
           state_color <= s_wr_fifo;
 
         when s_wr_fifo =>
