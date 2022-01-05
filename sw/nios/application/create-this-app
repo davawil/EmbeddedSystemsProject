@@ -3,9 +3,9 @@
 # This script creates the hello_world application in this directory.
 
 
-BSP_DIR=/home/vm/Documents/EmbeddedSystemsProject/sw/nios/lab4_bsp/
-QUARTUS_PROJECT_DIR=/home/vm/Documents/EmbeddedSystemsProject/hw/quartus/
-NIOS2_APP_GEN_ARGS="--elf-name lab4.elf --set OBJDUMP_INCLUDE_SOURCE 1 --src-files hello_world.c"
+BSP_DIR=C:/Users/David/EmbeddedSystems_mini_project/EmbeddedSystemsProject_Integrate/sw/nios/Lab4_integrate_bsp/
+QUARTUS_PROJECT_DIR=C:/Users/David/EmbeddedSystems_mini_project/EmbeddedSystemsProject_Camera/hw/quartus/
+NIOS2_APP_GEN_ARGS="--elf-name Lab4_integrate.elf --set OBJDUMP_INCLUDE_SOURCE 1 --src-files hello_world.c"
 
 
 # First, check to see if $SOPC_KIT_NIOS2 environmental variable is set.

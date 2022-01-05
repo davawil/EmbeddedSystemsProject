@@ -1,4 +1,8 @@
 	soc_system u0 (
+		.cameracontroller_0_camera_frame_valid    (<connected-to-cameracontroller_0_camera_frame_valid>),    //        cameracontroller_0_camera.frame_valid
+		.cameracontroller_0_camera_line_valid     (<connected-to-cameracontroller_0_camera_line_valid>),     //                                 .line_valid
+		.cameracontroller_0_camera_data           (<connected-to-cameracontroller_0_camera_data>),           //                                 .data
+		.cameracontroller_0_cameraclk_clk         (<connected-to-cameracontroller_0_cameraclk_clk>),         //     cameracontroller_0_cameraclk.clk
 		.cameracontroller_0_camerareset_n_reset_n (<connected-to-cameracontroller_0_camerareset_n_reset_n>), // cameracontroller_0_camerareset_n.reset_n
 		.cameracontroller_0_pixclk_clk            (<connected-to-cameracontroller_0_pixclk_clk>),            //        cameracontroller_0_pixclk.clk
 		.clk_clk                                  (<connected-to-clk_clk>),                                  //                              clk.clk
@@ -70,9 +74,12 @@
 		.i2c_0_i2c_sda                            (<connected-to-i2c_0_i2c_sda>),                            //                                 .sda
 		.pio_leds_external_connection_export      (<connected-to-pio_leds_external_connection_export>),      //     pio_leds_external_connection.export
 		.reset_reset_n                            (<connected-to-reset_reset_n>),                            //                            reset.reset_n
-		.cameracontroller_0_camera_frame_valid    (<connected-to-cameracontroller_0_camera_frame_valid>),    //        cameracontroller_0_camera.frame_valid
-		.cameracontroller_0_camera_line_valid     (<connected-to-cameracontroller_0_camera_line_valid>),     //                                 .line_valid
-		.cameracontroller_0_camera_data           (<connected-to-cameracontroller_0_camera_data>),           //                                 .data
-		.cameracontroller_0_cameraclk_clk         (<connected-to-cameracontroller_0_cameraclk_clk>)          //     cameracontroller_0_cameraclk.clk
+		.lcd_controller_0_conduit_end_csn         (<connected-to-lcd_controller_0_conduit_end_csn>),         //     lcd_controller_0_conduit_end.csn
+		.lcd_controller_0_conduit_end_d           (<connected-to-lcd_controller_0_conduit_end_d>),           //                                 .d
+		.lcd_controller_0_conduit_end_lcdon       (<connected-to-lcd_controller_0_conduit_end_lcdon>),       //                                 .lcdon
+		.lcd_controller_0_conduit_end_rdn         (<connected-to-lcd_controller_0_conduit_end_rdn>),         //                                 .rdn
+		.lcd_controller_0_conduit_end_restn       (<connected-to-lcd_controller_0_conduit_end_restn>),       //                                 .restn
+		.lcd_controller_0_conduit_end_rs          (<connected-to-lcd_controller_0_conduit_end_rs>),          //                                 .rs
+		.lcd_controller_0_conduit_end_wrn         (<connected-to-lcd_controller_0_conduit_end_wrn>)          //                                 .wrn
 	);
 

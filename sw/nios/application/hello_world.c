@@ -7,6 +7,7 @@
 #include "i2c/i2c.h"
 #include "sys/alt_irq.h"
 #include "altera_avalon_pio_regs.h"
+#include "lcd.h"
 
 #include <stdint.h>
 #include "cmos_sensor_output_generator/cmos_sensor_output_generator.h"
@@ -15,6 +16,16 @@
 #define FRAME0 0x00000000
 #define FRAME1 0x00020000
 #define FRAME_SIZE 76800
+
+//LCD CONTROLLER
+#define LCD_FRONT_IMAGE_OFF 0
+#define LCD_BACK_IMAGE_OFF 4
+#define LCD_START_OFF 8
+#define LCD_CMD_DATA_OFF 12
+#define LCD_IS_WRITING_CMD_OFF 16
+#define LCD_IRQ_PENDING_OFF 20
+
+//CAMERA CONTROLLER
 #define CAMERA_CONTROLLER_FRAME0 0
 #define CAMERA_CONTROLLER_FRAME1 1
 #define CAMERA_CONTROLLER_START 2
@@ -86,7 +97,17 @@ void init_TRDB_D5M() {
 	trdb_d5m_write(&i2c, COL_MODE_ADDR, 0x0033); // col skip 4x, col bin 4x
 }
 
-
+static void CameraControllerISR(void *unused){
+	IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, 4*CAMERA_CONTROLLER_RE_IRQ, 1);
+	//restart Camera Controller
+	//load_image();
+	lcd_camera_ready();
+}
+static void LCDControllerISR(void *unused){
+	lcd_clear_irq();
+	//restart Camera Controller
+	IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, 4*CAMERA_CONTROLLER_START, 1);
+}
 int load_image(uint32_t addr){
 	//char* filename = "/mnt/host/image.ppm";
 	char* filename = "/mnt/host/image.ppm";
@@ -120,29 +141,6 @@ int load_image(uint32_t addr){
 	fclose(foutput);
 	return 0;
 }
-
-
-static void CameraControllerISR(void *unused){
-	IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, 4*CAMERA_CONTROLLER_RE_IRQ, 1);
-	uint32_t addr;
-	iter ++;
-	if(currentFrame == 0){
-		addr = FRAME0;
-	}
-	else{
-		addr = FRAME1;
-	}
-	//load_image(addr);
-//	if (iter % 20 == 0){
-//		load_image(addr);
-//	}
-	load_image(addr);
-	//load_image(addr);
-	currentFrame = (currentFrame + 1)%2;
-	//restart Camera Controller
-	IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, 4*CAMERA_CONTROLLER_START, 1);
-	//cmos_sensor_output_generator_start(&cmos_sensor_output_generator);
-}
 int main()
 {
 	iter = 0;
@@ -156,9 +154,16 @@ int main()
 	if(fail)
 		return 1;
 	alt_ic_irq_enable(0,0);
+	fail = alt_ic_isr_register(0,
+				2, LCDControllerISR, NULL, 0x0);
+	if(fail)
+		return 1;
+	alt_ic_irq_enable(0,0);
 
 	init_TRDB_D5M();
+	init_launch_lcd();
 	usleep(1000*1000);
+	start_lcd();
 
 	printf("Hello from Nios II!\n");
 	IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, 4*CAMERA_CONTROLLER_FRAME0, FRAME0);

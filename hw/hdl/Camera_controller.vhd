@@ -93,7 +93,8 @@ architecture comp of Camera_controller is
 			DataWr			: in std_logic_vector(31 downto 0);
 			FBuff0			: out std_logic_vector(31 downto 0);
 			FBuff1			: out std_logic_vector(31 downto 0);
-			start			: out std_logic
+			start			: out std_logic;
+			reset_irq		: out std_logic
 		);
 	end component AS_sub;
 
@@ -151,7 +152,8 @@ begin
 			DataWr				=> AS_DataWr,
 			FBuff0				=> FBuff0,
 			FBuff1				=> FBuff1,
-			start				=> start
+			start				=> start,
+			reset_irq			=> reset_irq
 		);
 	camera : component Camera_interface_sub
 		port map(
@@ -176,10 +178,6 @@ begin
       --CameraClk <= '0';
     elsif rising_edge(clk) then
       -- clkDiv_count 	:= clkDiv_count + 1;
-
-		if reset_irq = '1' then
-			reset_irq <= '0';
-		end if;
       -- if clkDiv_count = 8 then
       --   CameraClk <= '1';
       --   clkDiv_count	:= 0;

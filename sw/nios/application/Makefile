@@ -139,18 +139,13 @@ ACDS_VERSION := 18.1
 # Define path to the application ELF. 
 # It may be used by the makefile fragments so is defined before including them. 
 # 
-ELF := lab4.elf
+ELF := Lab4_integrate.elf
 
 # Paths to C, C++, and assembly source files.
-C_SRCS := hello_world.c i2c/i2c.c
+C_SRCS += hello_world.c i2c/i2c.c
+C_SRCS += lcd.c
 CXX_SRCS :=
 ASM_SRCS :=
-#C_SRCS += cmos_sensor_output_generator/cmos_sensor_output_generator.c
-#C_SRCS += demo_256_MB_memory_access.c
-#C_SRCS += demo_cmos_sensor_output_generator.c
-#C_SRCS += demo_i2c.c
-#C_SRCS += hello_world.c
-#C_SRCS += i2c/i2c.c
 
 
 # Path to root of object file tree.
@@ -183,7 +178,7 @@ CRT0 :=
 SYS_LIB :=
 
 # Define path to the root of the BSP.
-BSP_ROOT_DIR := /home/vm/Documents/EmbeddedSystemsProject/sw/nios/lab4_bsp/
+BSP_ROOT_DIR := C:/Users/David/EmbeddedSystems_mini_project/EmbeddedSystemsProject_Integrate/sw/nios/Lab4_integrate_bsp/
 
 # List of application specific include directories, library directories and library names
 APP_INCLUDE_DIRS :=
@@ -194,7 +189,7 @@ APP_LIBRARY_NAMES :=
 BUILD_PRE_PROCESS :=
 BUILD_POST_PROCESS :=
 
-QUARTUS_PROJECT_DIR := /home/vm/Documents/EmbeddedSystemsProject/hw/quartus/
+QUARTUS_PROJECT_DIR := C:/Users/David/EmbeddedSystems_mini_project/EmbeddedSystemsProject_Camera/hw/quartus/
 
 
 #END GENERATED

@@ -6,7 +6,7 @@ JedecChain;
 	P ActionCode(Ign)
 		Device PartName(SOCVHPS) MfrSpec(OpMask(0));
 	P ActionCode(Cfg)
-		Device PartName(5CSEMA4U23) Path("/home/vm/Documents/EmbeddedSystemsProject/hw/quartus/output_files/") File("ES_mini_project_TRDB_D5M_LT24.sof") MfrSpec(OpMask(1));
+		Device PartName(5CSEMA4U23) Path("C:/Users/David/EmbeddedSystems_mini_project/EmbeddedSystemsProject_Integrate/hw/quartus/output_files/") File("ES_mini_project_TRDB_D5M_LT24_time_limited.sof") MfrSpec(OpMask(1));
 
 ChainEnd;
 

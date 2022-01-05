@@ -11,7 +11,8 @@ entity AS_sub is
 			DataWr			: in std_logic_vector(31 downto 0);
 			FBuff0			: out std_logic_vector(31 downto 0);
 			FBuff1			: out std_logic_vector(31 downto 0);
-			start			: out std_logic
+			start			: out std_logic;
+			reset_irq		: out std_logic
 		);
 	end AS_sub;
 	
@@ -21,6 +22,7 @@ architecture comp of AS_sub is
 	signal int_reset_irq	: std_logic := '0';
 begin
 	start <= int_start;
+	reset_irq <= int_reset_irq;
 	process(clk, nReset)
 		begin
 			if nReset = '0' then

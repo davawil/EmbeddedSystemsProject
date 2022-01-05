@@ -200,7 +200,14 @@ architecture rtl of DE0_Nano_SoC_TRDB_D5M_LT24_top_level is
             cameracontroller_0_camera_frame_valid    : in    std_logic                     := 'X';             -- frame_valid
             cameracontroller_0_camera_line_valid     : in    std_logic                     := 'X';             -- line_valid
             cameracontroller_0_camera_data           : in    std_logic_vector(11 downto 0) := (others => 'X'); -- data
-            cameracontroller_0_cameraclk_clk         : out   std_logic                                         -- clk
+            cameracontroller_0_cameraclk_clk         : out   std_logic;                                         -- clk
+			lcd_controller_0_conduit_end_lcdon : out   std_logic;
+            lcd_controller_0_conduit_end_restn : out   std_logic;
+            lcd_controller_0_conduit_end_csn   : out   std_logic;
+            lcd_controller_0_conduit_end_rs     : out   std_logic;
+            lcd_controller_0_conduit_end_wrn   : out   std_logic;
+            lcd_controller_0_conduit_end_rdn   : out   std_logic;
+            lcd_controller_0_conduit_end_d      : out   std_logic_vector(15 downto 0)
         );
     end component soc_system;
 
@@ -282,7 +289,14 @@ begin
         cameracontroller_0_camera_frame_valid    => GPIO_1_D5M_FVAL,    --        cameracontroller_0_camera.frame_valid
         cameracontroller_0_camera_line_valid     => GPIO_1_D5M_LVAL,     --                                 .line_valid
         cameracontroller_0_camera_data           => GPIO_1_D5M_D,           --                                 .data
-        cameracontroller_0_cameraclk_clk         => GPIO_1_D5M_XCLKIN
+        cameracontroller_0_cameraclk_clk         => GPIO_1_D5M_XCLKIN,
+		lcd_controller_0_conduit_end_lcdon => GPIO_0_LT24_LCD_ON,
+        lcd_controller_0_conduit_end_restn => GPIO_0_LT24_RESET_N,
+        lcd_controller_0_conduit_end_csn   => GPIO_0_LT24_CS_N,
+        lcd_controller_0_conduit_end_rs     => GPIO_0_LT24_RS,
+        lcd_controller_0_conduit_end_wrn   => GPIO_0_LT24_WR_N,
+        lcd_controller_0_conduit_end_rdn   => GPIO_0_LT24_RD_N,
+        lcd_controller_0_conduit_end_d      => GPIO_0_LT24_D
     );
 
 end;
