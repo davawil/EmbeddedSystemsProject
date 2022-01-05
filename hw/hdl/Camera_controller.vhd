@@ -36,6 +36,7 @@ architecture comp of Camera_controller is
   signal FBuff0		: std_logic_vector(31 downto 0);
   signal FBuff1		: std_logic_vector(31 downto 0);
   signal start		: std_logic;
+  signal reset_irq	: std_logic;
   --signal start_DMA	: std_logic;
   --signal start_CI		: std_logic;
 
@@ -51,14 +52,16 @@ architecture comp of Camera_controller is
 
 	component fifo is
     port(
-      clock		: IN STD_LOGIC ;
-      data		: IN STD_LOGIC_VECTOR (15 DOWNTO 0);
-      rdreq		: IN STD_LOGIC ;
-      wrreq		: IN STD_LOGIC ;
-      empty		: OUT STD_LOGIC ;
-      full		: OUT STD_LOGIC ;
-      q			: OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
-      usedw		: OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
+		clock		: IN STD_LOGIC ;
+		data		: IN STD_LOGIC_VECTOR (15 DOWNTO 0);
+		rdreq		: IN STD_LOGIC ;
+		sclr		: IN STD_LOGIC ;
+		wrreq		: IN STD_LOGIC ;
+		almost_empty		: OUT STD_LOGIC ;
+		empty		: OUT STD_LOGIC ;
+		full		: OUT STD_LOGIC ;
+		q		: OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
+		usedw		: OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
     );
 	end component fifo;
 
@@ -76,7 +79,8 @@ architecture comp of Camera_controller is
 			RdData			: in std_logic_vector(15 downto 0);
 			FBuff0			: in std_logic_vector(31 downto 0);
 			FBuff1			: in std_logic_vector(31 downto 0);
-			start_DMA		: in std_logic
+			start_DMA		: in std_logic;
+			reset_irq		: in std_logic
 		);
 	end component DMA_sub;
 
@@ -109,14 +113,16 @@ architecture comp of Camera_controller is
 
 begin
 	fifo_inst : fifo PORT MAP (
-		clock	 	=> clk,
-		data	 	=> WrData,
-		rdreq	 	=> RdFifo,
-		wrreq	 	=> WrFifo,
-		empty	 	=> fifo_empty,
-		full	 	=> fifo_full,
-		q	 		  => RdData,
-		usedw	 	=> used_words
+		clock	 		=> clk,
+		data	 		=> WrData,
+		rdreq	 		=> RdFifo,
+		sclr			=> not nReset,
+		wrreq	 		=> WrFifo,
+		almost_empty	=> Fifo_almost_empty,
+		empty	 		=> fifo_empty,
+		full	 		=> fifo_full,
+		q	 		  	=> RdData,
+		usedw	 		=> used_words
 	);
 
 	dma : component DMA_sub
@@ -133,7 +139,8 @@ begin
 			RdData				=> RdData,
 			FBuff0				=> FBuff0,
 			FBuff1				=> FBuff1,
-			start_DMA			=> start
+			start_DMA			=> start,
+			reset_irq			=> reset_irq
 		);
 	slave : component AS_sub
 		port map(
@@ -170,18 +177,21 @@ begin
     elsif rising_edge(clk) then
       -- clkDiv_count 	:= clkDiv_count + 1;
 
+		if reset_irq = '1' then
+			reset_irq <= '0';
+		end if;
       -- if clkDiv_count = 8 then
       --   CameraClk <= '1';
       --   clkDiv_count	:= 0;
       -- else
       --   CameraClk <= '0';
       -- end if;
-      --PLACE HOLDER UNTIL ADDED Fifo_almost_empty
-      if used_words < "00000010" then
-        Fifo_almost_empty <= '1';
-      else
-        Fifo_almost_empty <= '0';
-      end if;
+      -- PLACE HOLDER UNTIL ADDED Fifo_almost_empty
+      -- if used_words < "00000010" then
+      --   Fifo_almost_empty <= '1';
+      -- else
+      --   Fifo_almost_empty <= '0';
+      -- end if;
     end if;
   end process;
 end comp;

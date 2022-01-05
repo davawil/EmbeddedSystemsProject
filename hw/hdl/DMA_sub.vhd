@@ -16,7 +16,8 @@ entity DMA_sub is
 			RdData			: in std_logic_vector(15 downto 0);
 			FBuff0			: in std_logic_vector(31 downto 0);
 			FBuff1			: in std_logic_vector(31 downto 0);
-			start_DMA		: in std_logic
+			start_DMA		: in std_logic;
+			reset_irq		: in std_logic
 		);
 	end DMA_sub;
 
@@ -56,7 +57,7 @@ begin
 					int_Address <= unsigned(FBuff0);
 				when S_Idle =>
 					start <= '0';
-					irq <= '0';
+					--irq <= '0';
 					if Fifo_almost_empty = '0' then
 						SM <= S_Acq;
 						RdFifo <= '1';
@@ -97,6 +98,7 @@ begin
 				when S_BuffInc =>
 					buffSel <= not buffSel;
 					SM <= S_Hold;
+					irq <= '1';
 
 				when S_Hold =>
 					if buffSel = '0' then
@@ -105,7 +107,9 @@ begin
 						int_Address <= unsigned(FBuff1);
 					end if;
 					pixCount <= to_unsigned(0, pixCount'length);
-					irq <= '1';
+					if reset_irq = '1' then
+						irq <= '0';
+					end if;
 					if start = '1' then
 						SM <= S_Idle;
 					end if;

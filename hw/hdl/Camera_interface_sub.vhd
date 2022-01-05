@@ -29,6 +29,7 @@ architecture comp of Camera_interface_sub is
   signal pix_max : std_logic_vector(11 downto 0) := (others => '0');
   signal shift_G : integer range 0 to 5;
   signal shift_RB : integer range 0 to 6;
+  signal synchronize_cam : std_logic := '0';
 
 
   --Signals merge_colors_proc
@@ -65,14 +66,15 @@ architecture comp of Camera_interface_sub is
 
   component fifo_color is
     PORT(
-      clock		: IN STD_LOGIC ;
-      data		: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
-      rdreq		: IN STD_LOGIC ;
-      wrreq		: IN STD_LOGIC ;
-      empty		: OUT STD_LOGIC ;
-      full		: OUT STD_LOGIC ;
-      q		    : OUT STD_LOGIC_VECTOR (11 DOWNTO 0);
-      usedw		: OUT STD_LOGIC_VECTOR (8 DOWNTO 0)
+		clock		: IN STD_LOGIC ;
+		data		: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
+		rdreq		: IN STD_LOGIC ;
+		sclr		: IN STD_LOGIC ;
+		wrreq		: IN STD_LOGIC ;
+		empty		: OUT STD_LOGIC ;
+		full		: OUT STD_LOGIC ;
+		q		: OUT STD_LOGIC_VECTOR (11 DOWNTO 0);
+		usedw		: OUT STD_LOGIC_VECTOR (8 DOWNTO 0)
     );
     end component fifo_color;
 
@@ -81,6 +83,7 @@ begin
 		clock	 	=> clk,
 		data	 	=> data,
 		rdreq	 	=> RdFifo_g,
+		sclr		=> not nReset,
 		wrreq	 	=> WrFifo_g,
 		empty	 	=> empty_g,
 		full	 	=> full_g,
@@ -92,6 +95,7 @@ begin
 		clock	 	=> clk,
 		data	 	=> data,
 		rdreq	 	=> RdFifo_r,
+		sclr		=> not nReset,
 		wrreq	 	=> WrFifo_r,
 		empty	 	=> empty_r,
 		full	 	=> full_r,
@@ -108,57 +112,52 @@ begin
       col <= x"000";
       shift_G <= 0;
       shift_RB <= 0;
+      synchronize_cam <= '0';
     elsif rising_edge(pixclk) then
-      case state_count is
-        when s_init =>
-          if LVAL = '1' and FVAL = '1' then
-            state_count <= s_inc_col;
-            col <= col + 1;
-          end if;
-
-        when s_inc_col =>
-          if col >= x"27F" then --0x27F = 639
-              col <= x"000";
-              if row < x"1DF" then --0x1DF = 479
-                row <= row + 1;
-              else
-                row <= x"000";
-                highest_bit <= 6;
-                state_count <= s_highest_bit;
-              end if;
-          elsif FVAL = '1' and LVAL = '1' then
-            col <= col + 1;
-          end if;
-
-        -- when s_inc_row =>
-        --   col <= x"000";
-        --   if row < x"1DF" then
-        --     state_count <= s_inc_col;
-        --     row <= row + 1;
-        --   else
-        --     state_count <= s_rst_row;
-        --   end if;
-
-        -- when s_rst_row =>
-        --   row <= x"000";
-        --   highest_bit <= 6;
-        --   state_count <= s_highest_bit;
-
-        when s_highest_bit =>
-          for bit_i in 11 downto 0 loop
-            if pix_max(bit_i) = '1' or bit_i = 6 then
-              highest_bit <= bit_i;
-              exit;
+      if synchronize_cam = '0' and start = '1' then
+        if LVAL = '0' and FVAL = '0' then
+          synchronize_cam <= '1';
+          row <= x"000";
+          col <= x"000";
+        end if;
+      else
+        case state_count is
+          when s_init =>
+            if LVAL = '1' and FVAL = '1' then
+              state_count <= s_inc_col;
+              col <= col + 1;
             end if;
-          end loop;
-          state_count <= s_rst_max;
 
-        when s_rst_max =>
-          shift_G <= highest_bit - 6;
-          shift_RB <= highest_bit - 5;
-          -- Transition only when the frame is valid again to not increase the column counter
-          state_count <= s_inc_col;
-      end case;
+          when s_inc_col =>
+            if col >= x"27F" then --0x27F = 639
+                col <= x"000";
+                if row < x"1DF" then --0x1DF = 479
+                  row <= row + 1;
+                else
+                  row <= x"000";
+                  highest_bit <= 6;
+                  state_count <= s_highest_bit;
+                end if;
+            elsif FVAL = '1' and LVAL = '1' then
+              col <= col + 1;
+            end if;
+
+          when s_highest_bit =>
+            for bit_i in 11 downto 0 loop
+              if pix_max(bit_i) = '1' or bit_i = 6 then
+                highest_bit <= bit_i;
+                exit;
+              end if;
+            end loop;
+            state_count <= s_rst_max;
+
+          when s_rst_max =>
+            shift_G <= highest_bit - 6;
+            shift_RB <= highest_bit - 5;
+            -- Transition only when the frame is valid again to not increase the column counter
+            state_count <= s_inc_col;
+        end case;
+      end if;
     end if;
   end process count_proc;
 
@@ -179,7 +178,7 @@ begin
       pixclk_sig <= pixclk_sig(0) & pixclk;
       case state_color is
         when s_init =>
-          if start = '1' and row = x"000" and col = x"000" and LVAL = '1' and FVAL='1' then
+          if start = '1' and row = x"000" and col = x"000" and LVAL = '1' and FVAL='1' and synchronize_cam = '1' then
             state_color <= s_start;
             pix_max <= x"000";
             start <= '0';

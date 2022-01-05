@@ -18,6 +18,7 @@
 #define CAMERA_CONTROLLER_FRAME0 0
 #define CAMERA_CONTROLLER_FRAME1 1
 #define CAMERA_CONTROLLER_START 2
+#define CAMERA_CONTROLLER_RE_IRQ 3
 #define MASK_RED 0xf800
 #define MASK_GREEN 0x07e0
 #define MASK_BLUE 0x001f
@@ -122,6 +123,7 @@ int load_image(uint32_t addr){
 
 
 static void CameraControllerISR(void *unused){
+	IOWR_32DIRECT(CAMERACONTROLLER_0_BASE, 4*CAMERA_CONTROLLER_RE_IRQ, 1);
 	uint32_t addr;
 	iter ++;
 	if(currentFrame == 0){
@@ -131,12 +133,10 @@ static void CameraControllerISR(void *unused){
 		addr = FRAME1;
 	}
 	//load_image(addr);
-	if (iter % 20 == 0){
-		load_image(addr);
-	}
-	if (iter == 1){
-		load_image(addr);
-	}
+//	if (iter % 20 == 0){
+//		load_image(addr);
+//	}
+	load_image(addr);
 	//load_image(addr);
 	currentFrame = (currentFrame + 1)%2;
 	//restart Camera Controller
@@ -148,8 +148,9 @@ int main()
 	iter = 0;
 	currentFrame = 0;
 	//Enable interrupts for camera controller
-	//IOWR_ALTERA_AVALON_PIO_IRQ_MASK(CAMERACONTROLLER_0_BASE, 0xF);
+	//IOWR_ALTERA_AVALON_PIO_IRQ_MASK(CAMERACONTROLLER_0_BASE, 0xFF);
 	//set up interrupt handlers
+	usleep(1000*1000);
 	int fail = alt_ic_isr_register(0,
 			0, CameraControllerISR, NULL, 0x0);
 	if(fail)
