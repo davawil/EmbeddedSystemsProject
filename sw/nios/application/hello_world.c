@@ -14,7 +14,7 @@
 #include "cmos_sensor_output_generator/cmos_sensor_output_generator_regs.h"
 
 #define FRAME0 0x00000000
-#define FRAME1 0x00020000
+#define FRAME1 0x00040000
 #define FRAME_SIZE 76800
 
 //LCD CONTROLLER

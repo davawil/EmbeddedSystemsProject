@@ -209,7 +209,7 @@ void LCD_init(){
     SET_WRITING_CMD_REG(1);
     LCD_WR_REG(0x000B); // Read Display MADCTL
         LCD_WR_DATA(0x0000); // Don't care
-        LCD_WR_DATA(0x0040); // B6 = '1' => Right to Left
+        LCD_WR_DATA(0x0020); // B6 = '1' => Right to Left
     SET_WRITING_CMD_REG(0);
     
     SET_WRITING_CMD_REG(1);
